@@ -16,6 +16,8 @@ PROC $sc_$cpu_sc_maxcmdats
 ;					procedure and then restore it.
 ;       01/25/11        Walt Moleski    Modified to use variable names for the
 ;                                       SC app name and table name
+;       10/24/16        Walt Moleski    Added hostCPU variable used to indicate
+;                                       the proper CPU for the table load
 ;
 ;  Arguments
 ;	None.
@@ -38,6 +40,7 @@ LOCAL cmdCtr, errcnt
 LOCAL atsPktId,atsAppId
 local SCAppName = "SC"
 local ATSATblName = SCAppName & "." & SC_ATS_TABLE_NAME & "1"
+local hostCPU = "$CPU"
 
 ;; Set the pkt and app Ids for the appropriate CPU
 ;; CPU1 is the default
@@ -142,7 +145,7 @@ enddo
 local endmnemonic = "$SC_$CPU_SC_ATSDATA[" & SC_ATS_BUFF_SIZE & "]"
 
 ;; Create the ATS Table Load file
-s create_tbl_file_from_cvt ("$CPU",atsPktId,"ATS A Table Max+1 Commands Load","$cpu_ats_maxcmd_ld",ATSATblName,"$SC_$CPU_SC_ATSDATA[1]",endmnemonic)
+s create_tbl_file_from_cvt (hostCPU,atsPktId,"ATS A Table Max+1 Commands Load","$cpu_ats_maxcmd_ld",ATSATblName,"$SC_$CPU_SC_ATSDATA[1]",endmnemonic)
 wait 5
 
 write ";*********************************************************************"

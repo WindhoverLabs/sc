@@ -1,6 +1,6 @@
 /*************************************************************************
 ** File:
-**   $Id: sc_tbldefs.h 1.6 2015/03/02 12:58:47EST sstrege Exp  $
+**   $Id: sc_tbldefs.h 1.2 2015/10/08 15:21:08EDT sstrege Exp  $
 **
 **  Copyright © 2007-2014 United States Government as represented by the 
 **  Administrator of the National Aeronautics and Space Administration. 
@@ -17,6 +17,8 @@
 ** Notes:
 **
 **   $Log: sc_tbldefs.h  $
+**   Revision 1.2 2015/10/08 15:21:08EDT sstrege 
+**   Restoration from MKS 2009 Trunk
 **   Revision 1.6 2015/03/02 12:58:47EST sstrege 
 **   Added copyright information
 **   Revision 1.5 2010/09/28 10:45:52EDT lwalling 

@@ -13,6 +13,8 @@ PROC $sc_$cpu_sc_appoffend
 ;
 ;	Date		   Name		Description
 ;	01/28/11	Walt Moleski	Original Procedure.
+;       10/24/16        Walt Moleski    Added hostCPU variable used to indicate
+;                                       the proper CPU for the table load
 ;
 ;  Arguments
 ;	None.
@@ -35,6 +37,7 @@ LOCAL cmdCtr, errcnt
 LOCAL atsPktId,atsAppId
 local SCAppName = "SC"
 local ATSAppendATblName = SCAppName & "." & SC_APPEND_TABLE_NAME
+local hostCPU = "$CPU"
 
 ;; Set the pkt and app Ids for the appropriate CPU
 ;; CPU1 is the default
@@ -137,7 +140,7 @@ $SC_$CPU_SC_ATSAPPENDDATA[i] = 0
 local endmnemonic = "$SC_$CPU_SC_ATSAPPENDDATA[" & SC_APPEND_BUFF_SIZE & "]"
 
 ;; Create the ATS Table Load file
-s create_tbl_file_from_cvt ("$CPU",atsPktId,"Append Table Cmd off end Load","$cpu_appoffend_ld",ATSAppendATblName,"$SC_$CPU_SC_ATSAPPENDDATA[1]",endmnemonic)
+s create_tbl_file_from_cvt (hostCPU,atsPktId,"Append Table Cmd off end Load","$cpu_appoffend_ld",ATSAppendATblName,"$SC_$CPU_SC_ATSAPPENDDATA[1]",endmnemonic)
 wait 5
 
 write ";*********************************************************************"

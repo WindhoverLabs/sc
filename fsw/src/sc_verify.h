@@ -1,6 +1,6 @@
 /*************************************************************************
  ** File:
- **   $Id: sc_verify.h 1.10 2015/03/02 12:58:36EST sstrege Exp  $
+ **   $Id: sc_verify.h 1.2 2015/10/08 15:21:11EDT sstrege Exp  $
  **
  **  Copyright © 2007-2014 United States Government as represented by the 
  **  Administrator of the National Aeronautics and Space Administration. 
@@ -21,6 +21,8 @@
  ** Notes:
  **
  **   $Log: sc_verify.h  $
+ **   Revision 1.2 2015/10/08 15:21:11EDT sstrege 
+ **   Restoration from MKS 2009 Trunk
  **   Revision 1.10 2015/03/02 12:58:36EST sstrege 
  **   Added copyright information
  **   Revision 1.9 2011/09/26 13:53:39EDT lwalling 

@@ -1,6 +1,6 @@
  /*************************************************************************
  ** File:
- **   $Id: sc_perfids.h 1.3 2015/03/02 12:58:33EST sstrege Exp  $
+ **   $Id: sc_perfids.h 1.2 2015/10/08 15:42:43EDT sstrege Exp  $
  **
  **  Copyright © 2007-2014 United States Government as represented by the 
  **  Administrator of the National Aeronautics and Space Administration. 
@@ -20,6 +20,8 @@
  ** Notes:
  **
  **   $Log: sc_perfids.h  $ 
+ **   Revision 1.2 2015/10/08 15:42:43EDT sstrege  
+ **   Restoration from MKS 2009 Trunk 
  **   Revision 1.3 2015/03/02 12:58:33EST sstrege  
  **   Added copyright information 
  **   Revision 1.2 2008/12/23 10:36:54EST nyanchik  

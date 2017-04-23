@@ -1,6 +1,6 @@
  /*************************************************************************
  ** File:
- **   $Id: sc_rts.h 1.4 2015/03/02 12:58:31EST sstrege Exp  $
+ **   $Id: sc_rts.h 1.2 2015/11/20 12:03:20EST sstrege Exp  $
  **
  **  Copyright © 2007-2014 United States Government as represented by the 
  **  Administrator of the National Aeronautics and Space Administration. 
@@ -22,6 +22,8 @@
  ** Notes:
  **
  **   $Log: sc_rts.h  $ 
+ **   Revision 1.2 2015/11/20 12:03:20EST sstrege  
+ **   Restoration from MKS 2009 Trunk 
  **   Revision 1.4 2015/03/02 12:58:31EST sstrege  
  **   Added copyright information 
  **   Revision 1.3 2011/03/15 17:30:47EDT lwalling  

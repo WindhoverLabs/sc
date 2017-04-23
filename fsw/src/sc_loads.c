@@ -1,8 +1,8 @@
  /*************************************************************************
  ** File:
- **   $Id: sc_loads.c 1.19 2015/03/02 12:58:29EST sstrege Exp  $
+ **   $Id: sc_loads.c 1.5.1.1 2016/10/21 17:37:27EDT sstrege Exp  $
  **
- **  Copyright © 2007-2014 United States Government as represented by the 
+ **  Copyright ï¿½ 2007-2014 United States Government as represented by the 
  **  Administrator of the National Aeronautics and Space Administration. 
  **  All Other Rights Reserved.  
  **
@@ -22,6 +22,18 @@
  ** Notes:
  **
  **   $Log: sc_loads.c  $ 
+ **   Revision 1.5.1.1 2016/10/21 17:37:27EDT sstrege  
+ **   Applying DCR 145914 change packages 
+ **   Revision 1.7 2016/10/21 14:51:58EDT mdeschu  
+ **   Revert argument checks, change parameters to uint32 from int32 
+ **   Revision 1.6 2016/10/21 12:20:42EDT mdeschu  
+ **   SC_Loads : SC_Insert: Adds validation of arguments passed in. Otherwise an index out of bounds condition could occur 
+ **   Revision 1.5 2016/09/09 16:32:08EDT mdeschu  
+ **   Arguements in CFE_EVS_SendEvent causing format warnings have been explicitly cast to (unsigned int) and (int) same as cFE. 
+ **   Revision 1.4 2015/12/08 14:56:32EST czogby  
+ **   Move function prototypes into .h files 
+ **   Revision 1.3 2015/10/08 16:18:08EDT sstrege  
+ **   Restoration from MKS 2009 Trunk 
  **   Revision 1.19 2015/03/02 12:58:29EST sstrege  
  **   Added copyright information 
  **   Revision 1.18 2014/06/06 14:10:33EDT sjudy  
@@ -68,6 +80,7 @@
 
 #include "cfe.h"
 #include "sc_app.h"
+#include "sc_loads.h"
 #include "sc_atsrq.h"
 #include "sc_utils.h"
 #include "sc_events.h"
@@ -77,121 +90,6 @@
  ** Local #defines
  **
  **************************************************************************/
-
-/**************************************************************************
- **
- ** Functions
- **
- **************************************************************************/
-
-/************************************************************************/
-/** \brief Parses an RTS to see if it is valid
- **  
- **  \par Description
- **         This routine is called to validate an RTS buffer. It parses through
- **           the RTS to make sure all of the commands look in reasonable shape.
- **       
- **  \par Assumptions, External Events, and Notes:
- **        None
- **
- **  \param [in]    Buffer          A pointer to the area to validate
- **
- **
- *************************************************************************/
-boolean SC_ParseRts (uint16 Buffer []);
-
-/************************************************************************/
-/** \brief Buids the Time index buffer for the ATS
- **  
- **  \par Description
- **            This routine builds the ATS Time Index Table after an ATS buffer
- **            has been loaded and the ATS Command Index Table has been built.
- **            This routine will take the commands that are pointed to by the
- **            pointers in the command index table and sort the commands by
- **            time order.       
- **       
- **  \par Assumptions, External Events, and Notes:
- **        None
- **
- **  \param [in]    AtsIndex        ATS array index
- **
- **
- *************************************************************************/
-
-void SC_BuildTimeIndexTable (uint16 AtsIndex);
-
-/************************************************************************/
-/** \brief Inserts an item in a sorted list
- **  
- **  \par Description
- **            This function will insert a new element into the list of
- **            ATS commands sorted by execution time.       
- **       
- **  \par Assumptions, External Events, and Notes:
- **        None
- **
- **  \param [in]    AtsIndex        ATS array index selection
- **
- **  \param [in]    NewCmdIndex     ATS command index for new list element
- ** 
- **  \param [in]    ListLength      Number of elements currently in list
- **
- **
- *************************************************************************/
-void SC_Insert (uint16 AtsIndex, int32 NewCmdIndex, int32 ListLength);
-
-/************************************************************************/
-/** \brief Initializes ATS tables before a load starts
- **  
- **  \par Description
- **            This function simply clears out the ats tables in preparation
- **            for a load.     
- **       
- **  \par Assumptions, External Events, and Notes:
- **        None
- **
- **  \param [in]    AtsIndex        ATS array index
- **
- *************************************************************************/
-void SC_InitAtsTables (uint16 AtsIndex);
-
-/************************************************************************/
-/** \brief Validation function for ATS or Append ATS table data
- **  
- **  \par Description
- **              This routine is called to validate the contents of an ATS
- **            or Apppend ATS table.
- **       
- **  \par Assumptions, External Events, and Notes:
- **        None
- **
- **  \returns
- **  \retcode #CFE_SUCCESS         \retdesc \copydoc CFE_SUCCESS   \endcode
- **  \retcode #SC_ERROR            \retdesc \copydoc SC_ERROR   \endcode
- **  \endreturns
- **
- *************************************************************************/
-int32 SC_VerifyAtsTable (uint16 *Buffer, int32 BufferWords);
-
-/************************************************************************/
-/** \brief Validation function for a single ATS or Append ATS table entry
- **  
- **  \par Description
- **              This routine is called to validate the contents of a
- **            single ATS or Append ATS table entry.
- **       
- **  \par Assumptions, External Events, and Notes:
- **        None
- **
- **  \returns
- **  \retstmt Returns 0 if no more entries in the table  \endcode
- **  \retstmt Returns -1 if the current entry is invalid  \endcode
- **  \retstmt Returns positive integer equal to table entry length (in words) \endcode
- **  \endreturns
- **
- *************************************************************************/
-int32 SC_VerifyAtsEntry(uint16 *Buffer, int32 EntryIndex, int32 BufferWords);
-
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /*                                                                 */
@@ -373,18 +271,18 @@ void SC_BuildTimeIndexTable (uint16 AtsIndex)
 /*  Inserts and element into a sorted list                         */
 /*                                                                 */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-void SC_Insert (uint16 AtsIndex, int32 NewCmdIndex, int32 ListLength)
+void SC_Insert (uint16 AtsIndex, uint32 NewCmdIndex, uint32 ListLength)
 {
     SC_AtsEntryHeader_t *Entry;         /* ATS table entry pointer */
     SC_AbsTimeTag_t      NewCmdTime=0;    /* new command execution time */
     SC_AbsTimeTag_t      ListCmdTime;   /* list entry execution time */
-    int32                CmdIndex;      /* ATS command index (cmd num - 1) */
-    int32                EntryIndex;    /* ATS entry location in table */
-    int32                TimeBufIndex;  /* this must be signed */        
+    uint32               CmdIndex;      /* ATS command index (cmd num - 1) */
+    uint32               EntryIndex;    /* ATS entry location in table */
+    int32                TimeBufIndex;  /* this must be signed */  
 
     /* get execution time for new list entry */
     if (ListLength > 0)
-    {
+    { 
         /* first get the entry index in the selected ATS table for the new command */
         EntryIndex = SC_AppData.AtsCmdIndexBuffer[AtsIndex][NewCmdIndex];
         /* then get a pointer to the ATS entry */
@@ -434,7 +332,6 @@ void SC_Insert (uint16 AtsIndex, int32 NewCmdIndex, int32 ListLength)
     ** In either case, there is an empty slot next to TimeBufIndex
     */    
     SC_AppData.AtsTimeIndexBuffer[AtsIndex][TimeBufIndex + 1] = NewCmdIndex;
-
 } /* end SC_Insert */
 
 
@@ -729,7 +626,7 @@ void SC_UpdateAppend (void)
 
     CFE_EVS_SendEvent(SC_UPDATE_APPEND_EID, CFE_EVS_INFORMATION,
            "Update Append ATS Table: load count = %d, command count = %d, byte count = %d",
-                      SC_AppData.AppendLoadCount, EntryCount, EntryIndex * 2);
+                      SC_AppData.AppendLoadCount, (int)EntryCount, (int)EntryIndex * 2);
     return;
 
 } /* end SC_UpdateAppend */
@@ -871,7 +768,7 @@ int32 SC_VerifyAtsTable (uint16 *Buffer, int32 BufferWords)
         {
             CFE_EVS_SendEvent(SC_VERIFY_ATS_EID, CFE_EVS_INFORMATION,
                "Verify ATS Table: command count = %d, byte count = %d",
-                              CommandCount, BufferIndex * 2);
+                              (int)CommandCount, (int)BufferIndex * 2);
         }
     }
         
@@ -928,7 +825,7 @@ int32 SC_VerifyAtsEntry(uint16 *Buffer, int32 EntryIndex, int32 BufferWords)
 
         CFE_EVS_SendEvent(SC_VERIFY_ATS_NUM_ERR_EID, CFE_EVS_ERROR,
            "Verify ATS Table error: invalid command number: buf index = %d, cmd num = %d",
-                          EntryIndex, Entry->CmdNumber);
+                          (int)EntryIndex, Entry->CmdNumber);
     }
     else if ((EntryIndex + SC_ATS_HDR_WORDS) > BufferWords)
     {
@@ -937,7 +834,7 @@ int32 SC_VerifyAtsEntry(uint16 *Buffer, int32 EntryIndex, int32 BufferWords)
 
         CFE_EVS_SendEvent(SC_VERIFY_ATS_END_ERR_EID, CFE_EVS_ERROR,
            "Verify ATS Table error: buffer full: buf index = %d, cmd num = %d, buf words = %d",
-                          EntryIndex, Entry->CmdNumber, BufferWords);
+                          (int)EntryIndex, Entry->CmdNumber, (int)BufferWords);
     }
     else
     {
@@ -957,7 +854,7 @@ int32 SC_VerifyAtsEntry(uint16 *Buffer, int32 EntryIndex, int32 BufferWords)
 
             CFE_EVS_SendEvent(SC_VERIFY_ATS_PKT_ERR_EID, CFE_EVS_ERROR,
                "Verify ATS Table error: invalid length: buf index = %d, cmd num = %d, pkt len = %d",
-                              EntryIndex, Entry->CmdNumber, CommandBytes);
+                              (int)EntryIndex, Entry->CmdNumber, (int)CommandBytes);
         }
         else if ((EntryIndex + SC_ATS_HDR_NOPKT_WORDS + CommandWords) > BufferWords)
         {
@@ -966,7 +863,7 @@ int32 SC_VerifyAtsEntry(uint16 *Buffer, int32 EntryIndex, int32 BufferWords)
 
             CFE_EVS_SendEvent(SC_VERIFY_ATS_BUF_ERR_EID, CFE_EVS_ERROR,
                "Verify ATS Table error: buffer overflow: buf index = %d, cmd num = %d, pkt len = %d",
-                              EntryIndex, Entry->CmdNumber, CommandBytes);
+                              (int)EntryIndex, Entry->CmdNumber, (int)CommandBytes);
         }
         else if (SC_OperData.AtsDupTestArray[Entry->CmdNumber -1] != SC_DUP_TEST_UNUSED)
         {
@@ -975,8 +872,8 @@ int32 SC_VerifyAtsEntry(uint16 *Buffer, int32 EntryIndex, int32 BufferWords)
 
             CFE_EVS_SendEvent(SC_VERIFY_ATS_DUP_ERR_EID, CFE_EVS_ERROR,
                "Verify ATS Table error: dup cmd number: buf index = %d, cmd num = %d, dup index = %d",
-                              EntryIndex, Entry->CmdNumber,
-                              SC_OperData.AtsDupTestArray[Entry->CmdNumber -1]);
+                              (int)EntryIndex, Entry->CmdNumber,
+                              (int)SC_OperData.AtsDupTestArray[Entry->CmdNumber -1]);
         }
         else
         {

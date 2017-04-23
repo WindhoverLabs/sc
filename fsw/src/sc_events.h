@@ -1,8 +1,8 @@
  /*************************************************************************
  ** File:
- **   $Id: sc_events.h 1.8 2015/03/02 12:58:44EST sstrege Exp  $
+ **   $Id: sc_events.h 1.2.1.1 2016/10/21 17:37:27EDT sstrege Exp  $
  **
- **  Copyright © 2007-2014 United States Government as represented by the 
+ **  Copyright ï¿½ 2007-2014 United States Government as represented by the 
  **  Administrator of the National Aeronautics and Space Administration. 
  **  All Other Rights Reserved.  
  **
@@ -21,6 +21,14 @@
  ** Notes:
  **
  **   $Log: sc_events.h  $ 
+ **   Revision 1.2.1.1 2016/10/21 17:37:27EDT sstrege  
+ **   Applying DCR 145914 change packages 
+ **   Revision 1.4 2016/10/21 14:51:58EDT mdeschu  
+ **   Revert argument checks, change parameters to uint32 from int32 
+ **   Revision 1.3 2016/10/21 12:20:40EDT mdeschu  
+ **   SC_Loads : SC_Insert: Adds validation of arguments passed in. Otherwise an index out of bounds condition could occur 
+ **   Revision 1.2 2015/10/08 15:22:14EDT sstrege  
+ **   Restoration from MKS 2009 Trunk 
  **   Revision 1.8 2015/03/02 12:58:44EST sstrege  
  **   Added copyright information 
  **   Revision 1.7 2014/06/06 11:37:54EDT sjudy  

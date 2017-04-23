@@ -1,9 +1,12 @@
 ###############################################################################
 # File: CFS Application Makefile 
 #
-# $Id: Makefile 1.6 2009/07/09 11:41:19EDT rmcgraw Exp  $
+# $Id: Makefile 1.1 2015/07/28 22:57:30EDT rperera Exp  $
 #
 # $Log: Makefile  $
+# Revision 1.1 2015/07/28 22:57:30EDT rperera 
+# Initial revision
+# Member added to project /CFS-APPs-PROJECT/sc/fsw/for_build/project.pj
 # Revision 1.6 2009/07/09 11:41:19EDT rmcgraw 
 # DCR8291:1 Changed CFE_MISSION_INC to CFS_MISSION_INC and added log if needed
 # Revision 1.5 2009/06/18 12:13:17EDT rmcgraw 

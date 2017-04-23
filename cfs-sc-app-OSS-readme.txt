@@ -1,10 +1,10 @@
 core Flight System (cFS) Stored Command Application (SC) 
 Open Source Release Readme
 
-SC Release 2.4.0 
+SC Release 2.5.0 
 
 Date: 
-February 27, 2015
+October 31, 2016
 
 Introduction:
   The Stored Command application (SC) is a core Flight System (cFS) application 
@@ -29,12 +29,12 @@ Introduction:
   The SC application is written in C and depends on the cFS Operating System 
   Abstraction Layer (OSAL) and cFE components.  To build and run the SC
   application, follow the cFS Deployment Guide instructions contained in 
-  cFE-6.4.1-OSS-release/docs.  There is additional SC application specific 
+  cFE-6.5.0-OSS-release/docs.  There is additional SC application specific 
   configuration information contained in the application user's guide
-  available in cfs-sc-2.4.0-OSS-release/docs/users_guide
+  available in cfs-sc-2.5.0-OSS-release/docs/users_guide
   
   There are also "Quick start" instructions provided in 
-  cFE-6.4.1-OSS-release/cfe-OSS-readme.txt   
+  cFE-6.5.0-OSS-release/cfe-OSS-readme.txt   
   
   The OSAL is available at http://sourceforge.net/projects/osal/ and 
   github.com/nasa/
@@ -46,21 +46,21 @@ Introduction:
  
  
 Software Included:
-  Stored Command application (SC) 2.4.0
+  Stored Command application (SC) 2.5.0
   
  
 Software Required:
 
- Operating System Abstraction Layer 4.1.1 or higher can be 
+ Operating System Abstraction Layer 4.2.0 or higher can be 
  obtained at http://sourceforge.net/projects/osal or 
  github.com/nasa/osal
  
- core Flight Executive 6.4.1 or higher can be obtained at
+ core Flight Executive 6.5.0 or higher can be obtained at
  http://sorceforge.net/projects/coreflightexec
 
   
 Runtime Targets Supported:
-   The "out of the box" targets in the cFE 6.4.1 distribution include:
+   The "out of the box" targets in the cFE 6.5.0 distribution include:
      1. 32 bit x86 Linux ( CentOS 6.x )
      2. Motorola MCP750 PowerPC vxWorks 6.4
 

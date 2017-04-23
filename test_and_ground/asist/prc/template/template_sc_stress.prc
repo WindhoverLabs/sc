@@ -150,6 +150,10 @@ PROC $sc_$cpu_sc_stress
 ;	Date		   Name		Description
 ;	01/21/09	Walt Moleski	Original Procedure.
 ;       01/24/11        Walt Moleski    Updated for SC 2.1.0.0
+;       10/24/16        Walt Moleski    Updated for SC 2.5.0.0 using CPU1 for
+;                                       commanding and added a hostCPU variable
+;                                       for utility procs that connect to the
+;                                       host IP.
 ;
 ;  Arguments
 ;	None.
@@ -236,6 +240,7 @@ local ATSATblName = SCAppName & "." & SC_ATS_TABLE_NAME & "1"
 local ATSBTblName = SCAppName & "." & SC_ATS_TABLE_NAME & "2"
 local RTS2TblName = SCAppName & "." & SC_RTS_TABLE_NAME & "002"
 local RTS5TblName = SCAppName & "." & SC_RTS_TABLE_NAME & "005"
+local hostCPU = "$CPU"
 
 ;; Set the pkt and app Ids for the appropriate CPU
 ;; CPU1 is the default
@@ -267,7 +272,7 @@ wait 10
 close_data_center
 wait 75
                                                                                 
-cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 write ";***********************************************************************"
@@ -461,7 +466,7 @@ write ";***********************************************************************"
 write ";  Step 1.7: Verify that all RTS tables have been allocated.            "
 write ";***********************************************************************"
 ;; Dump the table registry and count the number of RTS tables
-s get_file_to_cvt (ramDir, "cfe_tbl_reg.log", "$sc_$cpu_tbl_reg.log", "$CPU")
+s get_file_to_cvt (ramDir, "cfe_tbl_reg.log", "$sc_$cpu_tbl_reg.log", hostCPU)
 wait 10
 
 local rtsTable,rtsTblCnt
@@ -490,7 +495,7 @@ else
 endif
 
 ;; Need to dump an RTS table
-s get_tbl_to_cvt (ramDir,RTS2TblName,"A","$cpu_rts2_tbl2_4","$CPU",rtsPktId)
+s get_tbl_to_cvt (ramDir,RTS2TblName,"A","$cpu_rts2_tbl2_4",hostCPU,rtsPktId)
 
 ;; Write each word of the dump table to fully verify that SC_RTS_BUFF_SIZE
 ;; word are stored in the RTS Table
@@ -553,14 +558,14 @@ for i = 1 to SC_NUMBER_OF_RTS do
   ;; Set the initial delay time for the first command
   $SC_$CPU_SC_RTSDATA[1] = delayTime
 
-  s create_tbl_file_from_cvt ("$CPU",rtsPktId,"RTS Stress Table Load",loadFileName,tableName,"$SC_$CPU_SC_RTSDATA[1]", "$SC_$CPU_SC_RTSDATA[10]")
+  s create_tbl_file_from_cvt (hostCPU,rtsPktId,"RTS Stress Table Load",loadFileName,tableName,"$SC_$CPU_SC_RTSDATA[1]", "$SC_$CPU_SC_RTSDATA[10]")
 
   ;; Load the table
   ut_setupevents "$SC","$CPU","CFE_TBL",CFE_TBL_FILE_LOADED_INF_EID,"INFO", 1
 
   cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-  start load_table (loadFileName, "$CPU")
+  start load_table (loadFileName, hostCPU)
 
   ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
   if (UT_TW_Status = UT_Success) then
@@ -725,14 +730,14 @@ compile_ats "$sc_$cpu_atsa_stres1" A {currentMET}
 s $sc_$cpu_load_ats_rts("$sc_$cpu_atsa_stres1","$cpu_ats_a_load11",1,1) 
 
 ;; Create the ATS Table Load file
-;;s create_tbl_file_from_cvt ("$CPU",atsPktId,"ATS A Stress Table Load", "$cpu_ats_a_load11",ATSATblName, "$SC_$CPU_SC_ATSDATA[1]", "$SC_$CPU_SC_ATSDATA[192]")
+;;s create_tbl_file_from_cvt (hostCPU,atsPktId,"ATS A Stress Table Load", "$cpu_ats_a_load11",ATSATblName, "$SC_$CPU_SC_ATSDATA[1]", "$SC_$CPU_SC_ATSDATA[192]")
 ;;
 ;; Load the table
 ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_ats_a_load11", "$CPU")
+start load_table ("$cpu_ats_a_load11", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -978,7 +983,7 @@ if (cmdCtr = 256) then
   cmdCtr = 0
 endif
 
-start load_table ("$cpu_ats_b_load3", "$CPU")
+start load_table ("$cpu_ats_b_load3", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -1062,7 +1067,7 @@ else
 endif
 
 ;; Need to dump the ATS table
-s get_tbl_to_cvt (ramDir,ATSBTblName,"A","$cpu_atsb_tbl2_11","$CPU",atsPktId)
+s get_tbl_to_cvt (ramDir,ATSBTblName,"A","$cpu_atsb_tbl2_11",hostCPU,atsPktId)
 
 wait 5
 
@@ -1087,7 +1092,7 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_rts005_load2", "$CPU")
+start load_table ("$cpu_rts005_load2", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -1171,7 +1176,7 @@ else
 endif
 
 ;; Need to dump the ATS table
-s get_tbl_to_cvt (ramDir,RTS5TblName,"A","$cpu_rts5_tbl2_14","$CPU",rtsPktId)
+s get_tbl_to_cvt (ramDir,RTS5TblName,"A","$cpu_rts5_tbl2_14",hostCPU,rtsPktId)
 
 ;; Check to make sure RTS #5 Status is disabled after the update
 write "--RTS Disable Status for 1-16 = ", %bin($SC_$CPU_SC_RTSDisableStatus[1].RTSStatusEntry.AllStatus,16)
@@ -1296,7 +1301,7 @@ wait 10
 close_data_center
 wait 75
                                                                                 
-cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 

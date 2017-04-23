@@ -214,6 +214,10 @@ PROC $sc_$cpu_sc_atsfunc
 ;	01/21/09	Walt Moleski	Original Procedure.
 ;	01/24/11	Walt Moleski	Updated for SC 2.1.0.0 which is mainly
 ;					the ATS Append command.
+;	10/24/16	Walt Moleski	Updated for SC 2.5.0.0 using CPU1 for 
+;					commanding and added a hostCPU variable
+;					for utility procs that connect to the
+;					host IP.
 ;
 ;  Arguments
 ;	None.
@@ -332,6 +336,7 @@ local firstCmdMET,lastCmdMET,waitTime
 local atsBTimes[6]
 local jumpTime
 local highWord,lowWord
+local hostCPU = "$CPU"
 
 ;; Set the pkt and app Ids for the appropriate CPU
 ;; CPU1 is the default
@@ -367,9 +372,9 @@ write ";***********************************************************************"
 wait 10
 
 close_data_center
-wait 75
+wait 60
 
-cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 write ";***********************************************************************"
@@ -580,9 +585,9 @@ if NOT file_exists(filename) then
 
 ;; ******* Need to initialize a variable for the end data size
   ;; Create the empty ATS Table Load files
-  s create_tbl_file_from_cvt ("$CPU",atsPktId,"ATS A Empty Table Load", "ats_a_empty_ld",ATSATblName, "$SC_$CPU_SC_ATSDATA[1]", "$SC_$CPU_SC_ATSDATA[8000]")
+  s create_tbl_file_from_cvt (hostCPU,atsPktId,"ATS A Empty Table Load", "ats_a_empty_ld",ATSATblName, "$SC_$CPU_SC_ATSDATA[1]", "$SC_$CPU_SC_ATSDATA[8000]")
 
-  s create_tbl_file_from_cvt ("$CPU",atsPktId,"ATS B Empty Table Load", "ats_b_empty_ld",ATSBTblName, "$SC_$CPU_SC_ATSDATA[1]", "$SC_$CPU_SC_ATSDATA[8000]")
+  s create_tbl_file_from_cvt (hostCPU,atsPktId,"ATS B Empty Table Load", "ats_b_empty_ld",ATSBTblName, "$SC_$CPU_SC_ATSDATA[1]", "$SC_$CPU_SC_ATSDATA[8000]")
 endif
 
 wait 5
@@ -617,7 +622,7 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_ats_a_load", "$CPU")
+start load_table ("$cpu_ats_a_load", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -717,7 +722,7 @@ else
 endif
 
 ;; Need to dump the ATS table
-s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl2_4","$CPU",atsPktId)
+s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl2_4",hostCPU,atsPktId)
 
 wait 5
 
@@ -902,7 +907,7 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_ats_a_load2", "$CPU")
+start load_table ("$cpu_ats_a_load2", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -956,7 +961,7 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_ats_b_load", "$CPU")
+start load_table ("$cpu_ats_b_load", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -1080,7 +1085,7 @@ elseif ($SC_$CPU_SC_FreeBytes[2] <> atsBFreeBytes) then
 endif
 
 ;; Need to dump the ATS table
-s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl2_12","$CPU",atsPktId)
+s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl2_12",hostCPU,atsPktId)
 
 wait 5
 
@@ -1212,7 +1217,7 @@ endif
 write "-- CURRENT MET after SWITCH => ", currentMET, " (hex) = ", %hex(currentMET,8)
 
 ;; Need to dump the ATS command table to view each command's status
-s get_tbl_to_cvt (ramDir,ATSBCmdTblName,"A","$cpu_atsb_cmd2_15","$CPU",atsCmdPktId)
+s get_tbl_to_cvt (ramDir,ATSBCmdTblName,"A","$cpu_atsb_cmd2_15",hostCPU,atsCmdPktId)
 
 ;; Command #1 should not indicate "Skipped"
 if (p@$SC_$CPU_SC_ATSCMDStatus[1] <> "Skipped") then
@@ -1226,7 +1231,7 @@ else
 endif
 
 ;; Need to dump the ATS table
-s get_tbl_to_cvt (ramDir,ATSBTblName,"A","$cpu_atsb_tbl2_15","$CPU",atsPktId)
+s get_tbl_to_cvt (ramDir,ATSBTblName,"A","$cpu_atsb_tbl2_15",hostCPU,atsPktId)
 
 ;; Wait until the first command executes
 currentMET = $SC_$CPU_TIME_STCFSecs + $SC_$CPU_TIME_METSecs
@@ -1282,7 +1287,7 @@ else
 endif
 
 ;; Need to dump the ATS command table to view each command's status
-s get_tbl_to_cvt (ramDir,ATSBCmdTblName,"A","$cpu_atsb_cmd2_16","$CPU",atsCmdPktId)
+s get_tbl_to_cvt (ramDir,ATSBCmdTblName,"A","$cpu_atsb_cmd2_16",hostCPU,atsCmdPktId)
 
 ;; At least Command #3 should indicate "Skipped"
 if (p@$SC_$CPU_SC_ATSCMDStatus[3] = "Skipped") then
@@ -1358,7 +1363,7 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_ats_a_load2", "$CPU")
+start load_table ("$cpu_ats_a_load2", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -1467,7 +1472,7 @@ else
 endif
 
 ;; Dump the ATS A table
-s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl2_20","$CPU",atsPktId)
+s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl2_20",hostCPU,atsPktId)
 
 wait 5
 
@@ -1493,7 +1498,7 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_ats_a_append", "$CPU")
+start load_table ("$cpu_ats_a_append", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -1693,10 +1698,10 @@ write ";***********************************************************************"
 write ";  Step 2.26: Dump the ATS A table to verify its contents."
 write ";***********************************************************************"
 ;; Dump the ATS Append table
-s get_tbl_to_cvt (ramDir,ATSAppendTblName,"A","$cpu_append_tbl2_26","$CPU",appendPktId)
+s get_tbl_to_cvt (ramDir,ATSAppendTblName,"A","$cpu_append_tbl2_26",hostCPU,appendPktId)
 
 ;; Dump the ATS A table
-s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl2_26","$CPU",atsPktId)
+s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl2_26",hostCPU,atsPktId)
 
 ;; Need to parse the ATS Data and Append Data to verify the Append Data was
 ;; added to the end of the ATS A table
@@ -1772,7 +1777,7 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_ats_oddbyteld", "$CPU")
+start load_table ("$cpu_ats_oddbyteld", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -1917,7 +1922,7 @@ write ";***********************************************************************"
 write ";  Step 2.31: Dump the ATS A table to verify its contents."
 write ";***********************************************************************"
 ;; Dump the ATS A table
-s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl2_31","$CPU",atsPktId)
+s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl2_31",hostCPU,atsPktId)
 wait 5
 
 ;; Wait the the ATS Completion event message
@@ -1986,7 +1991,7 @@ write ";  Step 3.2: Send the Start ATS command for an invalid ATS ID. "
 write ";***********************************************************************"
 write ";  Step 3.2.1: ID = 0 "
 write ";***********************************************************************"
-ut_setupevents "$SC", "$CPU", {SCAppName}, SC_STARTATS_CMD_INVLD_ID_ERR_EID, "ERROR", 1
+ut_setupevents "$SC","$CPU",{SCAppName},SC_STARTATS_CMD_INVLD_ID_ERR_EID,"ERROR", 1
 
 errcnt = $SC_$CPU_SC_CMDEC + 1
 
@@ -2015,7 +2020,7 @@ endif
 write ";***********************************************************************"
 write ";  Step 3.2.2: ID = 3 "
 write ";***********************************************************************"
-ut_setupevents "$SC", "$CPU", {SCAppName}, SC_STARTATS_CMD_INVLD_ID_ERR_EID, "ERROR", 1
+ut_setupevents "$SC","$CPU",{SCAppName},SC_STARTATS_CMD_INVLD_ID_ERR_EID,"ERROR", 1
 
 errcnt = $SC_$CPU_SC_CMDEC + 1
 
@@ -2164,7 +2169,7 @@ write ";***********************************************************************"
 write ";  Step 3.6: Send a valid Jump ATS command. This command should be  "
 write ";  rejected since neither ATS is currently executing. "
 write ";***********************************************************************"
-ut_setupevents "$SC", "$CPU", {SCAppName}, SC_JUMPATS_CMD_NOT_ACT_ERR_EID, "ERROR", 1
+ut_setupevents "$SC","$CPU",{SCAppName},SC_JUMPATS_CMD_NOT_ACT_ERR_EID,"ERROR",1
 
 currentMET = $SC_$CPU_TIME_STCFSecs + $SC_$CPU_TIME_METSecs
 if (SC_TIME_TO_USE = SC_USE_UTC) then
@@ -2373,7 +2378,7 @@ $SC_$CPU_SC_ATSDATA[14] = x'0002'
 $SC_$CPU_SC_ATSDATA[28] = x'0002'
 
 ;; Create the ATS Table Load file
-s create_tbl_file_from_cvt ("$CPU",atsPktId,"ATS A Table Load", "$cpu_ats_a_load3",ATSATblName, "$SC_$CPU_SC_ATSDATA[1]", "$SC_$CPU_SC_ATSDATA[42]")
+s create_tbl_file_from_cvt (hostCPU,atsPktId,"ATS A Table Load", "$cpu_ats_a_load3",ATSATblName, "$SC_$CPU_SC_ATSDATA[1]", "$SC_$CPU_SC_ATSDATA[42]")
 
 write ";***********************************************************************"
 write ";  Step 4.2: Send the Table Services Load command with the above file.  "
@@ -2383,7 +2388,7 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_ats_a_load3", "$CPU")
+start load_table ("$cpu_ats_a_load3", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -2400,7 +2405,7 @@ else
 endif
 
 ;; Need to dump the ATS table
-s get_tbl_to_cvt (ramDir,ATSATblName,"I","$cpu_atsa_tbl4_2","$CPU",atsPktId)
+s get_tbl_to_cvt (ramDir,ATSATblName,"I","$cpu_atsa_tbl4_2",hostCPU,atsPktId)
 
 wait 5
 
@@ -2510,7 +2515,7 @@ wait 5
 write ";***********************************************************************"
 write ";  Step 4.6: Send a Switch command when there are no ATSs executing.   "
 write ";***********************************************************************"
-ut_setupevents "$SC", "$CPU", {SCAppName}, SC_SWITCH_ATS_CMD_IDLE_ERR_EID, "ERROR", 1
+ut_setupevents "$SC","$CPU",{SCAppName},SC_SWITCH_ATS_CMD_IDLE_ERR_EID,"ERROR",1
 
 errcnt = $SC_$CPU_SC_CMDEC + 1
 ;; Send the Command
@@ -2557,7 +2562,7 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_ats_maxcmd_ld", "$CPU")
+start load_table ("$cpu_ats_maxcmd_ld", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -2620,7 +2625,7 @@ else
 endif
 
 ;; Need to dump the ATS table
-s get_tbl_to_cvt (ramDir,ATSATblName,"I","$cpu_atsa_tbl4_9","$CPU",atsPktId)
+s get_tbl_to_cvt (ramDir,ATSATblName,"I","$cpu_atsa_tbl4_9",hostCPU,atsPktId)
 
 wait 5
 
@@ -2685,7 +2690,7 @@ s $sc_$cpu_load_ats_rts("$sc_$cpu_atsa_load4","$cpu_ats_a_load4",0)
 $SC_$CPU_SC_ATSDATA[28] = x'0080'
 
 ;; Create the ATS Table Load file
-s create_tbl_file_from_cvt ("$CPU",atsPktId,"ATS A Table Load", "$cpu_ats_a_load4",ATSATblName, "$SC_$CPU_SC_ATSDATA[1]", "$SC_$CPU_SC_ATSDATA[42]")
+s create_tbl_file_from_cvt (hostCPU,atsPktId,"ATS A Table Load", "$cpu_ats_a_load4",ATSATblName, "$SC_$CPU_SC_ATSDATA[1]", "$SC_$CPU_SC_ATSDATA[42]")
 
 write ";***********************************************************************"
 write ";  Step 4.12: Send the Table Services Load command with the above file."
@@ -2695,7 +2700,7 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_ats_a_load4", "$CPU")
+start load_table ("$cpu_ats_a_load4", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -2787,7 +2792,7 @@ else
 endif
 
 ;; Need to dump the ATS table
-s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl4_14","$CPU",atsPktId)
+s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl4_14",hostCPU,atsPktId)
 
 wait 5
 
@@ -2863,7 +2868,7 @@ write ";***********************************************************************"
 write ";  Step 4.17: Verify that the first 3 commands are marked 'Skipped'.  "
 write ";***********************************************************************"
 ;; Need to dump the ATS command table to view each command's status
-s get_tbl_to_cvt (ramDir,ATSACmdTblName,"A","$cpu_atsa_cmd4_17","$CPU",atsCmdPktId)
+s get_tbl_to_cvt (ramDir,ATSACmdTblName,"A","$cpu_atsa_cmd4_17",hostCPU,atsCmdPktId)
 
 ;; Commands #1-3 should indicate "Skipped"
 if (p@$SC_$CPU_SC_ATSCMDStatus[1] = "Skipped") AND ;;
@@ -2914,7 +2919,7 @@ else
 endif
 
 ;; Need to dump the ATS command table to view command #4's status
-s get_tbl_to_cvt (ramDir,ATSACmdTblName,"A","$cpu_atsa_cmd4_18","$CPU",atsCmdPktId)
+s get_tbl_to_cvt (ramDir,ATSACmdTblName,"A","$cpu_atsa_cmd4_18",hostCPU,atsCmdPktId)
 
 ;; Command #4 should indicate "Failed Checksum"
 if (p@$SC_$CPU_SC_ATSCMDStatus[4] = "Failed Checksum") then
@@ -3019,7 +3024,7 @@ s $sc_$cpu_load_ats_rts("$sc_$cpu_atsa_load5","$cpu_ats_a_load5",0)
 $SC_$CPU_SC_ATSDATA[21] = x'0068'
 
 ;; Create the ATS Table Load file
-s create_tbl_file_from_cvt ("$CPU",atsPktId,"ATS A Table Load", "$cpu_ats_a_load5",ATSATblName, "$SC_$CPU_SC_ATSDATA[1]", "$SC_$CPU_SC_ATSDATA[44]")
+s create_tbl_file_from_cvt (hostCPU,atsPktId,"ATS A Table Load", "$cpu_ats_a_load5",ATSATblName, "$SC_$CPU_SC_ATSDATA[1]", "$SC_$CPU_SC_ATSDATA[44]")
 wait 1
 
 write ";***********************************************************************"
@@ -3030,7 +3035,7 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_ats_a_load5", "$CPU")
+start load_table ("$cpu_ats_a_load5", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -3123,7 +3128,7 @@ else
 endif
 
 ;; Need to dump the ATS table
-s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl4_23","$CPU",atsPktId)
+s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl4_23",hostCPU,atsPktId)
 
 wait 5
 
@@ -3196,9 +3201,9 @@ write ";***********************************************************************"
 write ";  Step 4.26: Verify that the command with the checksum error is "
 write ";  discarded and marked appropriately and the ATS continues to execute. "
 write ";***********************************************************************"
-ut_setupevents "$SC", "$CPU", {SCAppName}, SC_ATS_CHKSUM_ERR_EID, "ERROR", 1
-ut_setupevents "$SC", "$CPU", {SCAppName}, SC_ATS_INLINE_SWTCH_NOT_LDED_ERR_EID, "ERROR", 2
-ut_setupevents "$SC", "$CPU", {SCAppName}, SC_JUMPATS_CMD_STOPPED_ERR_EID, "ERROR", 3
+ut_setupevents "$SC","$CPU",{SCAppName},SC_ATS_CHKSUM_ERR_EID, "ERROR", 1
+ut_setupevents "$SC","$CPU",{SCAppName},SC_ATS_INLINE_SWTCH_NOT_LDED_ERR_EID,"ERROR", 2
+ut_setupevents "$SC","$CPU",{SCAppName},SC_JUMPATS_CMD_STOPPED_ERR_EID,"ERROR",3
 
 lastCmdMET = $SC_$CPU_SC_NEXTATSTIME + 15
 switchCmdTime = $SC_$CPU_SC_NEXTATSTIME + 30
@@ -3233,7 +3238,7 @@ else
 endif
 
 ;; Need to dump the ATS command table to view command #4's status
-s get_tbl_to_cvt (ramDir,ATSACmdTblName,"A","$cpu_atsa_cmd4_26","$CPU",atsCmdPktId)
+s get_tbl_to_cvt (ramDir,ATSACmdTblName,"A","$cpu_atsa_cmd4_26",hostCPU,atsCmdPktId)
 
 ;; Command #3 should indicate "Failed Checksum"
 if (p@$SC_$CPU_SC_ATSCMDStatus[3] = "Failed Checksum") then
@@ -3352,7 +3357,7 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_ats_b_load2", "$CPU")
+start load_table ("$cpu_ats_b_load2", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -3455,7 +3460,7 @@ else
 endif
 
 ;; Need to dump the ATS table
-s get_tbl_to_cvt (ramDir,ATSBTblName,"A","$cpu_atsb_tbl4_32","$CPU",atsPktId)
+s get_tbl_to_cvt (ramDir,ATSBTblName,"A","$cpu_atsb_tbl4_32",hostCPU,atsPktId)
 
 wait 5
 
@@ -3636,7 +3641,7 @@ endif
 write ";***********************************************************************"
 write ";  Step 4.36: Send the Start command for ATS A.                      "
 write ";***********************************************************************"
-ut_setupevents "$SC", "$CPU", {SCAppName}, SC_STARTATS_CMD_NOT_IDLE_ERR_EID, "ERROR", 1
+ut_setupevents "$SC","$CPU",{SCAppName},SC_STARTATS_CMD_NOT_IDLE_ERR_EID,"ERROR", 1
 
 errcnt = $SC_$CPU_SC_CMDEC + 1
 ;; Send the Command
@@ -3705,7 +3710,7 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("ats_a_empty_ld", "$CPU")
+start load_table ("ats_a_empty_ld", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -3810,7 +3815,7 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_cmdoffend_ld", "$CPU")
+start load_table ("$cpu_cmdoffend_ld", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -3948,14 +3953,14 @@ enddo
 %liv (log_procedure) = logging
 
 ;; Create the ATS Table Load file
-s create_tbl_file_from_cvt ("$CPU",atsPktId,"ATS A Time Table Load", "$cpu_ats_a_load6",ATSATblName, "$SC_$CPU_SC_ATSDATA[1]", "$SC_$CPU_SC_ATSDATA[192]")
+s create_tbl_file_from_cvt (hostCPU,atsPktId,"ATS A Time Table Load", "$cpu_ats_a_load6",ATSATblName, "$SC_$CPU_SC_ATSDATA[1]", "$SC_$CPU_SC_ATSDATA[192]")
 
 ;; Load the table
 ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_ats_a_load6", "$CPU")
+start load_table ("$cpu_ats_a_load6", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -4093,14 +4098,14 @@ enddo
 local endmnemonic = "$SC_$CPU_SC_ATSAPPENDDATA[" & SC_APPEND_BUFF_SIZE & "]"
 
 ;; Create the ATS Table Load file
-s create_tbl_file_from_cvt ("$CPU",atsPktId,"ATS Append Cmd To Big Error","$cpu_append_load3",ATSAppendTblName,"$SC_$CPU_SC_ATSAPPENDDATA[1]",endmnemonic)
+s create_tbl_file_from_cvt (hostCPU,atsPktId,"ATS Append Cmd To Big Error","$cpu_append_load3",ATSAppendTblName,"$SC_$CPU_SC_ATSAPPENDDATA[1]",endmnemonic)
 
 ;; Load the table
 ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_append_load3", "$CPU")
+start load_table ("$cpu_append_load3", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -4207,7 +4212,7 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_appoffend_ld", "$CPU")
+start load_table ("$cpu_appoffend_ld", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -4301,7 +4306,7 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_ats_700cmd_ld", "$CPU")
+start load_table ("$cpu_ats_700cmd_ld", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -4389,7 +4394,7 @@ else
 endif
 
 ;; Need to dump the ATS table
-s get_tbl_to_cvt (ramDir,ATSBTblName,"A","$cpu_atsb_tbl4_58","$CPU",atsPktId)
+s get_tbl_to_cvt (ramDir,ATSBTblName,"A","$cpu_atsb_tbl4_58",hostCPU,atsPktId)
 
 wait 5
 
@@ -4410,7 +4415,7 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_appfull_ld", "$CPU")
+start load_table ("$cpu_appfull_ld", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -4611,7 +4616,7 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_ats_a_append", "$CPU")
+start load_table ("$cpu_ats_a_append", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -4799,7 +4804,7 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_ats_a_load2", "$CPU")
+start load_table ("$cpu_ats_a_load2", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -4955,7 +4960,7 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_ats_a_load7", "$CPU")
+start load_table ("$cpu_ats_a_load7", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -5130,9 +5135,9 @@ write ";*********************************************************************"
 wait 10
 
 close_data_center
-wait 75
+wait 60
 
-cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 

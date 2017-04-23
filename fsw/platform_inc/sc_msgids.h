@@ -1,6 +1,6 @@
  /*************************************************************************
  ** File:
- **   $Id: sc_msgids.h 1.2 2015/03/02 12:58:25EST sstrege Exp  $
+ **   $Id: sc_msgids.h 1.2 2015/11/20 12:03:19EST sstrege Exp  $
  **
  **  Copyright © 2007-2014 United States Government as represented by the 
  **  Administrator of the National Aeronautics and Space Administration. 
@@ -20,6 +20,8 @@
  ** Notes:
  **
  **   $Log: sc_msgids.h  $ 
+ **   Revision 1.2 2015/11/20 12:03:19EST sstrege  
+ **   Restoration from MKS 2009 Trunk 
  **   Revision 1.2 2015/03/02 12:58:25EST sstrege  
  **   Added copyright information 
  **   Revision 1.1 2009/01/26 14:46:33EST nyanchik  

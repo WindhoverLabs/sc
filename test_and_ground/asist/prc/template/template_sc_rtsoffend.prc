@@ -13,6 +13,8 @@ PROC $sc_$cpu_sc_rtsoffend
 ;
 ;	Date		   Name		Description
 ;	09/01/11	Walt Moleski	Original Procedure.
+;       10/24/16        Walt Moleski    Added hostCPU variable used to indicate
+;                                       the proper CPU for the table load
 ;
 ;  Arguments
 ;	None.
@@ -35,6 +37,7 @@ LOCAL cmdCtr, errcnt
 LOCAL rtsPktId,rtsAppId
 local SCAppName = "SC"
 local RTSTbl15Name = SCAppName & "." & SC_RTS_TABLE_NAME & "015"
+local hostCPU = "$CPU"
 
 ;; Set the pkt and app Ids for the appropriate CPU
 ;; CPU1 is the default
@@ -120,7 +123,7 @@ $SC_$CPU_SC_ATSDATA[i] = x'3100'
 local endmnemonic = "$SC_$CPU_SC_RTSDATA[" & SC_RTS_BUFF_SIZE & "]"
 
 ;; Create the ATS Table Load file
-s create_tbl_file_from_cvt ("$CPU",rtsPktId,"RTS 15 Table Command off end Load", "$cpu_rts015_load",RTSTbl15Name,"$SC_$CPU_SC_RTSDATA[1]",endmnemonic)
+s create_tbl_file_from_cvt (hostCPU,rtsPktId,"RTS 15 Table Command off end Load", "$cpu_rts015_load",RTSTbl15Name,"$SC_$CPU_SC_RTSDATA[1]",endmnemonic)
 wait 5
 
 write ";*********************************************************************"

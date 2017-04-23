@@ -1,6 +1,6 @@
  /*************************************************************************
  ** File:
- **   $Id: sc_loads.h 1.10 2015/03/02 12:58:24EST sstrege Exp  $
+ **   $Id: sc_loads.h 1.4.1.1 2016/10/21 17:37:28EDT sstrege Exp  $
  **
  **  Copyright © 2007-2014 United States Government as represented by the 
  **  Administrator of the National Aeronautics and Space Administration. 
@@ -22,6 +22,14 @@
  ** Notes:
  **
  **   $Log: sc_loads.h  $ 
+ **   Revision 1.4.1.1 2016/10/21 17:37:28EDT sstrege  
+ **   Applying DCR 145914 change packages 
+ **   Revision 1.5 2016/10/21 14:51:59EDT mdeschu  
+ **   Revert argument checks, change parameters to uint32 from int32 
+ **   Revision 1.4 2015/12/08 14:56:36EST czogby  
+ **   Move function prototypes into .h files 
+ **   Revision 1.3 2015/10/08 16:18:37EDT sstrege  
+ **   Restoration from MKS 2009 Trunk 
  **   Revision 1.10 2015/03/02 12:58:24EST sstrege  
  **   Added copyright information 
  **   Revision 1.9 2010/09/28 10:44:09EDT lwalling  
@@ -45,6 +53,114 @@
 #define _sc_loads_
 
 #include "cfe.h"
+
+/************************************************************************/
+/** \brief Parses an RTS to see if it is valid
+ **  
+ **  \par Description
+ **         This routine is called to validate an RTS buffer. It parses through
+ **           the RTS to make sure all of the commands look in reasonable shape.
+ **       
+ **  \par Assumptions, External Events, and Notes:
+ **        None
+ **
+ **  \param [in]    Buffer          A pointer to the area to validate
+ **
+ **
+ *************************************************************************/
+boolean SC_ParseRts (uint16 Buffer []);
+
+/************************************************************************/
+/** \brief Buids the Time index buffer for the ATS
+ **  
+ **  \par Description
+ **            This routine builds the ATS Time Index Table after an ATS buffer
+ **            has been loaded and the ATS Command Index Table has been built.
+ **            This routine will take the commands that are pointed to by the
+ **            pointers in the command index table and sort the commands by
+ **            time order.       
+ **       
+ **  \par Assumptions, External Events, and Notes:
+ **        None
+ **
+ **  \param [in]    AtsIndex        ATS array index
+ **
+ **
+ *************************************************************************/
+
+void SC_BuildTimeIndexTable (uint16 AtsIndex);
+
+/************************************************************************/
+/** \brief Inserts an item in a sorted list
+ **  
+ **  \par Description
+ **            This function will insert a new element into the list of
+ **            ATS commands sorted by execution time.       
+ **       
+ **  \par Assumptions, External Events, and Notes:
+ **        None
+ **
+ **  \param [in]    AtsIndex        ATS array index selection
+ **
+ **  \param [in]    NewCmdIndex     ATS command index for new list element
+ ** 
+ **  \param [in]    ListLength      Number of elements currently in list
+ **
+ **
+ *************************************************************************/
+void SC_Insert (uint16 AtsIndex, uint32 NewCmdIndex, uint32 ListLength);
+
+/************************************************************************/
+/** \brief Initializes ATS tables before a load starts
+ **  
+ **  \par Description
+ **            This function simply clears out the ats tables in preparation
+ **            for a load.     
+ **       
+ **  \par Assumptions, External Events, and Notes:
+ **        None
+ **
+ **  \param [in]    AtsIndex        ATS array index
+ **
+ *************************************************************************/
+void SC_InitAtsTables (uint16 AtsIndex);
+
+/************************************************************************/
+/** \brief Validation function for ATS or Append ATS table data
+ **  
+ **  \par Description
+ **              This routine is called to validate the contents of an ATS
+ **            or Apppend ATS table.
+ **       
+ **  \par Assumptions, External Events, and Notes:
+ **        None
+ **
+ **  \returns
+ **  \retcode #CFE_SUCCESS         \retdesc \copydoc CFE_SUCCESS   \endcode
+ **  \retcode #SC_ERROR            \retdesc \copydoc SC_ERROR   \endcode
+ **  \endreturns
+ **
+ *************************************************************************/
+int32 SC_VerifyAtsTable (uint16 *Buffer, int32 BufferWords);
+
+/************************************************************************/
+/** \brief Validation function for a single ATS or Append ATS table entry
+ **  
+ **  \par Description
+ **              This routine is called to validate the contents of a
+ **            single ATS or Append ATS table entry.
+ **       
+ **  \par Assumptions, External Events, and Notes:
+ **        None
+ **
+ **  \returns
+ **  \retstmt Returns 0 if no more entries in the table  \endcode
+ **  \retstmt Returns -1 if the current entry is invalid  \endcode
+ **  \retstmt Returns positive integer equal to table entry length (in words) \endcode
+ **  \endreturns
+ **
+ *************************************************************************/
+int32 SC_VerifyAtsEntry(uint16 *Buffer, int32 EntryIndex, int32 BufferWords);
 
 /************************************************************************/
 /** \brief Loads an ATS into the data structures in SC

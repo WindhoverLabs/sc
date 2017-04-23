@@ -1,6 +1,6 @@
 /*************************************************************************
  ** File:
- **   $Id: sc_app.h 1.14 2015/03/02 12:58:41EST sstrege Exp  $
+ **   $Id: sc_app.h 1.4 2015/12/08 14:56:35EST czogby Exp  $
  **
  **  Copyright © 2007-2014 United States Government as represented by the 
  **  Administrator of the National Aeronautics and Space Administration. 
@@ -20,6 +20,10 @@
  ** Notes:
  **
  **   $Log: sc_app.h  $
+ **   Revision 1.4 2015/12/08 14:56:35EST czogby 
+ **   Move function prototypes into .h files
+ **   Revision 1.3 2015/10/08 16:05:48EDT sstrege 
+ **   Restoration from MKS 2009 Trunk
  **   Revision 1.14 2015/03/02 12:58:41EST sstrege 
  **   Added copyright information
  **   Revision 1.13 2011/09/26 13:49:40EDT lwalling 
@@ -62,6 +66,162 @@
 #include "sc_msgdefs.h"
 #include "sc_msg.h"
 
+/************************************************************************/
+/** \brief Main loop for SC
+ **  
+ **  \par Description
+ **       This function is the entry point and main loop for the Stored
+ **       Commands (SC) application.
+ **       
+ **  \par Assumptions, External Events, and Notes:
+ **        None
+ **
+ *************************************************************************/
+void SC_AppMain (void);
+
+/************************************************************************/
+/** \brief Initialize application
+ **  
+ **  \par Description
+ **       This function initializes the SC application. The return value
+ **       is either CFE_SUCCESS or the error code from the failed cFE
+ **       function call. Note that all errors generate an identifying
+ **       event message.
+ **       
+ **  \par Assumptions, External Events, and Notes:
+ **        None
+ **
+ **  \returns
+ **  \retcode #CFE_SUCCESS \retdesc \copydoc CFE_SUCCESS \endcode
+ **  \retstmt Return status from CFE initialization function \endcode
+ **  \endreturns
+ **
+ *************************************************************************/
+int32 SC_AppInit (void);
+
+/************************************************************************/
+/** \brief Initialize application tables
+ **  
+ **  \par Description
+ **       This function initializes the SC application tables. The
+ **       return value is either CFE_SUCCESS or the error code from the
+ **       failed cFE function call. Note that all errors generate an
+ **       identifying event message.
+ **       
+ **  \par Assumptions, External Events, and Notes:
+ **        None
+ **
+ **  \returns
+ **  \retcode #CFE_SUCCESS \retdesc \copydoc CFE_SUCCESS \endcode
+ **  \retstmt Return status from CFE initialization function \endcode
+ **  \endreturns
+ **
+ *************************************************************************/
+int32 SC_InitTables (void);
+
+/************************************************************************/
+/** \brief Register tables with cFE Table Services
+ **  
+ **  \par Description
+ **       This function registers all SC tables with cFE Table Services.
+ **       The return value is either CFE_SUCCESS or the error code from
+ **       the failed cFE function call. Note that all errors generate an
+ **       identifying event message.
+ **       
+ **  \par Assumptions, External Events, and Notes:
+ **        None
+ **
+ **  \returns
+ **  \retcode #CFE_SUCCESS \retdesc \copydoc CFE_SUCCESS \endcode
+ **  \retstmt Return status from CFE initialization function \endcode
+ **  \endreturns
+ **
+ *************************************************************************/
+int32 SC_RegisterAllTables (void);
+
+/************************************************************************/
+/** \brief Get dump only table buffer pointers
+ **  
+ **  \par Description
+ **       This function acquires buffer pointers to the dump only tables.
+ **       The return value is either CFE_SUCCESS or the error code from
+ **       the failed cFE function call. Note that all errors generate an
+ **       identifying event message.
+ **       
+ **  \par Assumptions, External Events, and Notes:
+ **        None
+ **
+ **  \returns
+ **  \retcode #CFE_SUCCESS \retdesc \copydoc CFE_SUCCESS \endcode
+ **  \retstmt Return status from CFE initialization function \endcode
+ **  \endreturns
+ **
+ *************************************************************************/
+int32 SC_GetDumpTablePointers (void);
+
+/************************************************************************/
+/** \brief Get loadable table buffer pointers
+ **  
+ **  \par Description
+ **       This function acquires buffer pointers to the loadable tables.
+ **       The return value is either CFE_SUCCESS or the error code from
+ **       the failed cFE function call. Note that all errors generate an
+ **       identifying event message.
+ **       
+ **  \par Assumptions, External Events, and Notes:
+ **        None
+ **
+ **  \returns
+ **  \retcode #CFE_SUCCESS \retdesc \copydoc CFE_SUCCESS \endcode
+ **  \retstmt Return status from CFE initialization function \endcode
+ **  \endreturns
+ **
+ *************************************************************************/
+int32 SC_GetLoadTablePointers (void);
+
+/************************************************************************/
+/** \brief Load default RTS tables
+ **  
+ **  \par Description
+ **       This function loads the default RTS tables. The return value
+ **       is either CFE_SUCCESS or the error code from the failed cFE
+ **       function call. Note that all errors generate an identifying
+ **       event message.
+ **       
+ **  \par Assumptions, External Events, and Notes:
+ **        None
+ **
+ **  \returns
+ **  \retcode #CFE_SUCCESS \retdesc \copydoc CFE_SUCCESS \endcode
+ **  \retstmt Return status from CFE initialization function \endcode
+ **  \endreturns
+ **
+ *************************************************************************/
+void  SC_LoadDefaultTables (void);
+
+/************************************************************************/
+/** \brief Register to receive cFE Table Services manage request commands
+ **
+ **  \par Description
+ **       This function provides cFE Table Services with the information
+ **       necessary to send a notification command when one of the SC dump
+ **       only tables has a dump pending, or when one of the SC loadable
+ **       tables has a load pending.  Upon receipt of the command, the
+ **       command handler will call the cFE Table Services API function
+ **       to manage the table.  This sequence of events ensures that dump
+ **       tables are not being updated by SC at the same moment that the
+ **       dump occurs, and likewise, that loadable tables are not being
+ **       referenced by SC at the moment that the update occurs.
+ **
+ **  \par Assumptions, External Events, and Notes:
+ **        None
+ **
+ **  \param [in]         (none)
+ **
+ **  \sa #SC_TableManageCmd
+ **
+ *************************************************************************/
+void SC_RegisterManageCmds(void);
 
 /************************************************************************
 ** Macro Definitions

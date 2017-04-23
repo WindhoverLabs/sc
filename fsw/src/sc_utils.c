@@ -1,6 +1,6 @@
  /*************************************************************************
  ** File:
- **   $Id: sc_utils.c 1.9 2015/03/02 12:59:04EST sstrege Exp  $
+ **   $Id: sc_utils.c 1.2 2015/10/08 15:21:09EDT sstrege Exp  $
  **
  **  Copyright © 2007-2014 United States Government as represented by the 
  **  Administrator of the National Aeronautics and Space Administration. 
@@ -20,6 +20,12 @@
  ** Notes:
  **
  **   $Log: sc_utils.c  $
+ **   Revision 1.2 2015/10/08 15:21:09EDT sstrege 
+ **   Restoration from MKS 2009 Trunk
+ **   Revision 1.11 2015/05/04 17:35:36EDT lwalling 
+ **   Include sc_msgids.h in sc_utils.c, fix compiler warning in SC_GetCurrentTime()
+ **   Revision 1.10 2015/05/04 16:43:34EDT lwalling 
+ **   Increment command error counter only for ground commands
  **   Revision 1.9 2015/03/02 12:59:04EST sstrege 
  **   Added copyright information
  **   Revision 1.8 2011/05/25 16:43:06EDT lwalling 
@@ -48,6 +54,7 @@
 #include "cfe.h"
 #include "sc_utils.h"
 #include "sc_events.h"
+#include "sc_msgids.h"
 
 /**************************************************************************
  **
@@ -64,25 +71,16 @@
 void SC_GetCurrentTime(void)
 {
     CFE_TIME_SysTime_t TempTime;
-    
-    /* Get the system time of the correct time */
-    
-    if (SC_TIME_TO_USE == SC_USE_UTC)
-    {
+
+    /* Use SC defined time */
+    #if (SC_TIME_TO_USE == SC_USE_UTC)
         TempTime = CFE_TIME_GetUTC();
-    }
-    else
-    {
-        if (SC_TIME_TO_USE == SC_USE_TAI)
-        {
-            TempTime = CFE_TIME_GetTAI();
-        }
-        else
-        {
-            /* Gets the cFE configured time */
-            TempTime = CFE_TIME_GetTime();
-        }            
-    }
+    #elif (SC_TIME_TO_USE == SC_USE_TAI)
+        TempTime = CFE_TIME_GetTAI();
+    #else
+        /* Use cFE configured time */
+        TempTime = CFE_TIME_GetTime();
+    #endif
 
     /* We don't care about subseconds */
     SC_AppData.CurrentTime = TempTime.Seconds;
@@ -204,7 +202,10 @@ boolean SC_VerifyCmdLength(CFE_SB_MsgPtr_t msg,
                           ActualLength,
                           ExpectedLength);
         Result = FALSE;
-        SC_AppData.CmdErrCtr++;
+        if (MessageID == SC_CMD_MID)
+        {
+            SC_AppData.CmdErrCtr++;
+        }
     }    
     return(Result);
 } /* End of SC_VerifyCmdLength */

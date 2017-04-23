@@ -2,9 +2,12 @@
 #
 # File: CFS Application Table Makefile
 #
-# $Id: sctables.mak 1.2 2010/04/22 13:21:34EDT lwalling Exp  $
+# $Id: sctables.mak 1.1 2015/07/28 22:57:36EDT rperera Exp  $
 #
 # $Log: sctables.mak  $
+# Revision 1.1 2015/07/28 22:57:36EDT rperera 
+# Initial revision
+# Member added to project /CFS-APPs-PROJECT/sc/fsw/for_build/project.pj
 # Revision 1.2 2010/04/22 13:21:34EDT lwalling 
 # Fix references to default table names
 # Revision 1.1 2010/03/16 15:48:07EDT lwalling 

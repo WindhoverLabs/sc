@@ -14,6 +14,8 @@ PROC $sc_$cpu_sc_rtsoddbyte
 ;
 ;	Date		   Name		Description
 ;	02/04/11	Walt Moleski	Original Procedure.
+;       10/24/16        Walt Moleski    Added hostCPU variable used to indicate
+;                                       the proper CPU for the table load
 ;
 ;  Arguments
 ;	None.
@@ -39,6 +41,7 @@ LOCAL cmdCtr, errcnt
 LOCAL rtsPktId,rtsAppId
 local SCAppName = "SC"
 local RTS3TblName = SCAppName & "." & SC_RTS_TABLE_NAME & "003"
+local hostCPU = "$CPU"
 
 ;; Set the pkt and app Ids for the appropriate CPU
 ;; CPU1 is the default
@@ -91,8 +94,6 @@ elseif ("$CPU" = "CPU3") then
   hkPktId = "p2AA"
 endif
 
-;; Each command is prepended with the ATS Command number and 
-;; a 4-byte Time to execute the command
 ;; Command 1 is the TST_SC_GETTIME = '1x37 C000 0002 04yy 00'
 $SC_$CPU_SC_RTSDATA[1] = 5
 $SC_$CPU_SC_RTSDATA[2] = nextCmd[1]
@@ -119,7 +120,7 @@ $SC_$CPU_SC_RTSDATA[16] = x'C000'
 $SC_$CPU_SC_RTSDATA[17] = x'0001'
 $SC_$CPU_SC_RTSDATA[18] = nextCRC[3]
 
-;; Clear out the rest of the ATS buffer
+;; Clear out the rest of the RTS buffer
 for i = 19 to SC_RTS_BUFF_SIZE do
   $SC_$CPU_SC_RTSDATA[i] = 0
 enddo
@@ -129,7 +130,7 @@ enddo
 local endmnemonic = "$SC_$CPU_SC_RTSDATA[" & SC_RTS_BUFF_SIZE & "]"
 
 ;; Create the RTS Table Load file
-s create_tbl_file_from_cvt ("$CPU",rtsPktId,"RTS 3 odd byte command Load","$cpu_rts3oddbyteld",RTS3TblName,"$SC_$CPU_SC_RTSDATA[1]",endmnemonic)
+s create_tbl_file_from_cvt (hostCPU,rtsPktId,"RTS 3 odd byte command Load","$cpu_rts3oddbyteld",RTS3TblName,"$SC_$CPU_SC_RTSDATA[1]",endmnemonic)
 wait 5
 
 write ";*********************************************************************"

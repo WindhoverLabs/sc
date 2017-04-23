@@ -154,6 +154,10 @@ PROC $sc_$cpu_sc_resetcds
 ;	02/06/09	Walt Moleski	Original Procedure.
 ;	01/25/11	Walt Moleski	Updated for SC 2.1.0.0
 ;	08/31/11	Walt Moleski	Updated for SC 2.2.0.0
+;       10/25/16        Walt Moleski    Updated for SC 2.5.0.0 using CPU1 for
+;                                       commanding and added a hostCPU variable
+;                                       for utility procs that connect to the
+;                                       host IP.
 ;
 ;  Arguments
 ;	None.
@@ -233,6 +237,7 @@ local ramDir = "RAM:0"
 local ATSATblName = SCAppName & "." & SC_ATS_TABLE_NAME & "1"
 local RTS3TblName = SCAppName & "." & SC_RTS_TABLE_NAME & "003"
 local RTS4TblName = SCAppName & "." & SC_RTS_TABLE_NAME & "004"
+local hostCPU = "$CPU"
 
 ;; Set the pkt and app Ids for the appropriate CPU
 ;; CPU1 is the default
@@ -264,7 +269,7 @@ wait 10
 close_data_center
 wait 75
 
-cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 write ";***********************************************************************"
@@ -462,7 +467,7 @@ else
 endif
 
 ;; Dump the CDS Registry
-s get_file_to_cvt (ramDir, "cfe_cds_reg.log", "$cpu_cds_reg.log", "$CPU")
+s get_file_to_cvt (ramDir, "cfe_cds_reg.log", "$cpu_cds_reg.log", hostCPU)
 
 wait 5
 
@@ -505,7 +510,7 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_ats_a_load8", "$CPU")
+start load_table ("$cpu_ats_a_load8", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -593,7 +598,7 @@ else
 endif
 
 ;; Dump ATS A table
-;;s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl2_3","$CPU",atsPktId)
+;;s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl2_3",hostCPU,atsPktId)
 
 wait 5
 
@@ -620,9 +625,9 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 2
 
-start load_table ("$cpu_rts003_load", "$CPU")
+start load_table ("$cpu_rts003_load", hostCPU)
 wait 5
-start load_table ("$cpu_rts004_load", "$CPU")
+start load_table ("$cpu_rts004_load", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -767,7 +772,7 @@ else
 endif
 
 ;; Dump RTS #3 table
-;;s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl2_7","$CPU",rtsPktId)
+;;s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl2_7",hostCPU,rtsPktId)
 
 wait 5
 
@@ -889,7 +894,7 @@ wait 10
 close_data_center
 wait 75
 
-cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 write ";***********************************************************************"
@@ -997,14 +1002,14 @@ else
 endif
 
 ;; Dump ATS A table
-s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl2_15","$CPU",atsPktId)
+s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl2_15",hostCPU,atsPktId)
 
 ;; Dump RTS #3 table
-s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl2_15","$CPU",rtsPktId)
+s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl2_15",hostCPU,rtsPktId)
 wait 5
 
 ;; Dump RTS #4 table
-s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl2_15","$CPU",rtsPktId)
+s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl2_15",hostCPU,rtsPktId)
 
 wait 5
 
@@ -1047,7 +1052,7 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_ats_a_load9a", "$CPU")
+start load_table ("$cpu_ats_a_load9a", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -1131,7 +1136,7 @@ else
 endif
 
 ;; Dump ATS A table
-;;s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl3_3","$CPU",atsPktId)
+;;s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl3_3",hostCPU,atsPktId)
 
 wait 5
 
@@ -1143,9 +1148,9 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 2
 
-start load_table ("$cpu_rts003_load", "$CPU")
+start load_table ("$cpu_rts003_load", hostCPU)
 wait 5
-start load_table ("$cpu_rts004_load", "$CPU")
+start load_table ("$cpu_rts004_load", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -1290,8 +1295,8 @@ else
 endif
 
 ;; Dump RTS #3 & 4 tables
-;;s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl3_7","$CPU",rtsPktId)
-;;s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl3_7","$CPU",rtsPktId)
+;;s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl3_7",hostCPU,rtsPktId)
+;;s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl3_7",hostCPU,rtsPktId)
 
 write ";***********************************************************************"
 write ";  Step 3.8: Send the Start command for ATS A.                         "
@@ -1508,11 +1513,11 @@ else
 endif
 
 ;; Dump ATS A table
-s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl314","$CPU",atsPktId)
+s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl314",hostCPU,atsPktId)
 
 ;; Dump RTS #3 & 4 tables
-s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl314","$CPU",rtsPktId)
-s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl314","$CPU",rtsPktId)
+s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl314",hostCPU,rtsPktId)
+s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl314",hostCPU,rtsPktId)
 
 wait 5
 
@@ -1611,7 +1616,7 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_ats_a_load9b", "$CPU")
+start load_table ("$cpu_ats_a_load9b", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -1695,7 +1700,7 @@ else
 endif
 
 ;; Dump ATS A table
-;;s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl423","$CPU",atsPktId)
+;;s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl423",hostCPU,atsPktId)
 
 wait 5
 
@@ -1707,9 +1712,9 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 2
 
-start load_table ("$cpu_rts003_load", "$CPU")
+start load_table ("$cpu_rts003_load", hostCPU)
 wait 5
-start load_table ("$cpu_rts004_load", "$CPU")
+start load_table ("$cpu_rts004_load", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -1854,8 +1859,8 @@ else
 endif
 
 ;; Dump RTS #3 & 4 tables
-;;s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl427","$CPU",rtsPktId)
-;;s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl427","$CPU",rtsPktId)
+;;s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl427",hostCPU,rtsPktId)
+;;s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl427",hostCPU,rtsPktId)
 
 wait 5
 
@@ -1997,7 +2002,7 @@ wait 10
 close_data_center
 wait 75
 
-cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 write ";***********************************************************************"
@@ -2144,12 +2149,12 @@ else
 endif
 
 ;; Dump ATS A table
-s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl4215","$CPU",atsPktId)
+s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl4215",hostCPU,atsPktId)
 
 ;; Dump RTS #3 & 4 tables
-s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl4215","$CPU",rtsPktId)
+s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl4215",hostCPU,rtsPktId)
 wait 5
-s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl4215","$CPU",rtsPktId)
+s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl4215",hostCPU,rtsPktId)
 wait 5
 
 step4_3:
@@ -2190,7 +2195,7 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_ats_a_load9c", "$CPU")
+start load_table ("$cpu_ats_a_load9c", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -2274,7 +2279,7 @@ else
 endif
 
 ;; Dump ATS A table
-;;s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl433","$CPU",atsPktId)
+;;s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl433",hostCPU,atsPktId)
 
 wait 5
 
@@ -2286,9 +2291,9 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 2
 
-start load_table ("$cpu_rts003_load", "$CPU")
+start load_table ("$cpu_rts003_load", hostCPU)
 wait 5
-start load_table ("$cpu_rts004_load", "$CPU")
+start load_table ("$cpu_rts004_load", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -2433,8 +2438,8 @@ else
 endif
 
 ;; Dump RTS #3 & 4 tables
-;;s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl437","$CPU",rtsPktId)
-;;s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl437","$CPU",rtsPktId)
+;;s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl437",hostCPU,rtsPktId)
+;;s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl437",hostCPU,rtsPktId)
 
 wait 5
 
@@ -2572,7 +2577,7 @@ wait 10
 close_data_center
 wait 75
                                                                                 
-cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 write ";***********************************************************************"
@@ -2720,12 +2725,12 @@ else
 endif
 
 ;; Dump ATS A table
-s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl4315","$CPU",atsPktId)
+s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl4315",hostCPU,atsPktId)
 
 ;; Dump RTS #3 & 4 tables
-s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl4315","$CPU",rtsPktId)
+s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl4315",hostCPU,rtsPktId)
 wait 5
-s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl4315","$CPU",rtsPktId)
+s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl4315",hostCPU,rtsPktId)
 wait 5
 
 step4_4:
@@ -2766,7 +2771,7 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_ats_a_load9d", "$CPU")
+start load_table ("$cpu_ats_a_load9d", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -2850,7 +2855,7 @@ else
 endif
 
 ;; Dump ATS A table
-;;s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl443","$CPU",atsPktId)
+;;s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl443",hostCPU,atsPktId)
 
 wait 5
 
@@ -2862,9 +2867,9 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 2
 
-start load_table ("$cpu_rts003_load", "$CPU")
+start load_table ("$cpu_rts003_load", hostCPU)
 wait 5
-start load_table ("$cpu_rts004_load", "$CPU")
+start load_table ("$cpu_rts004_load", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -3009,8 +3014,8 @@ else
 endif
 
 ;; Dump RTS #3 & 4 tables
-;;s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl447","$CPU",rtsPktId)
-;;s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl447","$CPU",rtsPktId)
+;;s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl447",hostCPU,rtsPktId)
+;;s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl447",hostCPU,rtsPktId)
 ;;wait 5
 
 write ";***********************************************************************"
@@ -3147,7 +3152,7 @@ wait 10
 close_data_center
 wait 75
                                                                                 
-cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 write ";***********************************************************************"
@@ -3295,7 +3300,7 @@ else
 endif
 
 ;; Dump ATS A table
-s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl4415","$CPU",atsPktId)
+s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl4415",hostCPU,atsPktId)
 
 wait 15
 
@@ -3337,7 +3342,7 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_ats_a_load9e", "$CPU")
+start load_table ("$cpu_ats_a_load9e", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -3421,7 +3426,7 @@ else
 endif
 
 ;; Dump ATS A table
-;;s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl453","$CPU",atsPktId)
+;;s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl453",hostCPU,atsPktId)
 
 wait 5
 
@@ -3433,9 +3438,9 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 2
 
-start load_table ("$cpu_rts003_load", "$CPU")
+start load_table ("$cpu_rts003_load", hostCPU)
 wait 5
-start load_table ("$cpu_rts004_load", "$CPU")
+start load_table ("$cpu_rts004_load", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -3580,8 +3585,8 @@ else
 endif
 
 ;; Dump RTS #3 & 4 tables
-;;s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl457","$CPU",rtsPktId)
-;;s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl457","$CPU",rtsPktId)
+;;s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl457",hostCPU,rtsPktId)
+;;s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl457",hostCPU,rtsPktId)
 
 wait 5
 
@@ -3719,7 +3724,7 @@ wait 10
 close_data_center
 wait 75
                                                                                 
-cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 write ";***********************************************************************"
@@ -3867,13 +3872,13 @@ else
 endif
 
 ;; Dump ATS A table
-s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl4515","$CPU",atsPktId)
+s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl4515",hostCPU,atsPktId)
 wait 5
 
 ;; Dump RTS #3 & 4 tables
-s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl4515","$CPU",rtsPktId)
+s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl4515",hostCPU,rtsPktId)
 wait 5
-s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl4515","$CPU",rtsPktId)
+s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl4515",hostCPU,rtsPktId)
 wait 5
 
 step5_0:
@@ -3916,7 +3921,7 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_ats_a_load9f", "$CPU")
+start load_table ("$cpu_ats_a_load9f", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -4000,7 +4005,7 @@ else
 endif
 
 ;; Dump ATS A table
-;;s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl513","$CPU",atsPktId)
+;;s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl513",hostCPU,atsPktId)
 
 wait 5
 
@@ -4012,9 +4017,9 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 2
 
-start load_table ("$cpu_rts003_load", "$CPU")
+start load_table ("$cpu_rts003_load", hostCPU)
 wait 5
-start load_table ("$cpu_rts004_load", "$CPU")
+start load_table ("$cpu_rts004_load", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -4158,8 +4163,8 @@ else
 endif
 
 ;; Dump RTS #3 & 4 tables
-;;s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl517","$CPU",rtsPktId)
-;;s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl517","$CPU",rtsPktId)
+;;s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl517",hostCPU,rtsPktId)
+;;s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl517",hostCPU,rtsPktId)
 
 wait 5
 
@@ -4452,12 +4457,12 @@ else
 endif
 
 ;; Dump ATS A table
-s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl5115","$CPU",atsPktId)
+s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl5115",hostCPU,atsPktId)
 
 ;; Dump RTS #3 & 4 tables
-s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl5115","$CPU",rtsPktId)
+s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl5115",hostCPU,rtsPktId)
 wait 5
-s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl5115","$CPU",rtsPktId)
+s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl5115",hostCPU,rtsPktId)
 wait 5
 
 step5_2:
@@ -4498,7 +4503,7 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_ats_a_load9g", "$CPU")
+start load_table ("$cpu_ats_a_load9g", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -4582,7 +4587,7 @@ else
 endif
 
 ;; Dump ATS A table
-;;s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl523","$CPU",atsPktId)
+;;s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl523",hostCPU,atsPktId)
 
 wait 5
 
@@ -4594,9 +4599,9 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 2
 
-start load_table ("$cpu_rts003_load", "$CPU")
+start load_table ("$cpu_rts003_load", hostCPU)
 wait 5
-start load_table ("$cpu_rts004_load", "$CPU")
+start load_table ("$cpu_rts004_load", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -4740,9 +4745,9 @@ else
 endif
 
 ;; Dump RTS #3 & 4 tables
-;;s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl527","$CPU",rtsPktId)
+;;s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl527",hostCPU,rtsPktId)
 ;;wait 5
-;;s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl527","$CPU",rtsPktId)
+;;s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl527",hostCPU,rtsPktId)
 ;;wait 5
 
 write ";***********************************************************************"
@@ -5034,12 +5039,12 @@ else
 endif
 
 ;; Dump ATS A table
-s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl5215","$CPU",atsPktId)
+s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl5215",hostCPU,atsPktId)
 
 ;; Dump RTS #3 & 4 tables
-s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl5215","$CPU",rtsPktId)
+s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl5215",hostCPU,rtsPktId)
 wait 5
-s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl5215","$CPU",rtsPktId)
+s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl5215",hostCPU,rtsPktId)
 wait 5
 
 step5_3:
@@ -5080,7 +5085,7 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_ats_a_load9h", "$CPU")
+start load_table ("$cpu_ats_a_load9h", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -5164,7 +5169,7 @@ else
 endif
 
 ;; Dump ATS A table
-;;s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl533","$CPU",atsPktId)
+;;s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl533",hostCPU,atsPktId)
 
 wait 5
 
@@ -5176,9 +5181,9 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 2
 
-start load_table ("$cpu_rts003_load", "$CPU")
+start load_table ("$cpu_rts003_load", hostCPU)
 wait 5
-start load_table ("$cpu_rts004_load", "$CPU")
+start load_table ("$cpu_rts004_load", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -5322,8 +5327,8 @@ else
 endif
 
 ;; Dump RTS #3 & 4 tables
-;;s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl537","$CPU",rtsPktId)
-;;s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl537","$CPU",rtsPktId)
+;;s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl537",hostCPU,rtsPktId)
+;;s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl537",hostCPU,rtsPktId)
 
 write ";***********************************************************************"
 write ";  Step 5.3.8: Send the Start command for ATS A. "
@@ -5614,12 +5619,12 @@ else
 endif
 
 ;; Dump ATS A table
-s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl5315","$CPU",atsPktId)
+s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl5315",hostCPU,atsPktId)
 
 ;; Dump RTS #3 & 4 tables
-s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl5315","$CPU",rtsPktId)
+s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl5315",hostCPU,rtsPktId)
 wait 5
-s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl5315","$CPU",rtsPktId)
+s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl5315",hostCPU,rtsPktId)
 wait 5
 
 step5_4:
@@ -5660,7 +5665,7 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_ats_a_load9i", "$CPU")
+start load_table ("$cpu_ats_a_load9i", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -5744,7 +5749,7 @@ else
 endif
 
 ;; Dump ATS A table
-;;s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl543","$CPU",atsPktId)
+;;s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl543",hostCPU,atsPktId)
 
 wait 5
 
@@ -5756,9 +5761,9 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 2
 
-start load_table ("$cpu_rts003_load", "$CPU")
+start load_table ("$cpu_rts003_load", hostCPU)
 wait 5
-start load_table ("$cpu_rts004_load", "$CPU")
+start load_table ("$cpu_rts004_load", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -5902,8 +5907,8 @@ else
 endif
 
 ;; Dump RTS #3 & 4 tables
-;;s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl547","$CPU",rtsPktId)
-;;s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl547","$CPU",rtsPktId)
+;;s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl547",hostCPU,rtsPktId)
+;;s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl547",hostCPU,rtsPktId)
 
 write ";***********************************************************************"
 write ";  Step 5.4.8: Send the Start command for ATS A. "
@@ -6194,12 +6199,12 @@ else
 endif
 
 ;; Dump ATS A table
-s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl5415","$CPU",atsPktId)
+s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl5415",hostCPU,atsPktId)
 
 ;; Dump RTS #3 & 4 tables
-s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl5415","$CPU",rtsPktId)
+s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl5415",hostCPU,rtsPktId)
 wait 5
-s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl5415","$CPU",rtsPktId)
+s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl5415",hostCPU,rtsPktId)
 wait 15
 
 step6_0:
@@ -6212,7 +6217,7 @@ wait 10
 close_data_center
 wait 75
                                                                                 
-cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 

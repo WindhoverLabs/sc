@@ -1,6 +1,6 @@
  /*************************************************************************
  ** File:
- **   $Id: sc_rtsrq.h 1.1.1.6.1.1 2015/03/02 13:05:10EST sstrege Exp  $
+ **   $Id: sc_rtsrq.h 1.2 2015/10/08 15:20:45EDT sstrege Exp  $
  **
  **  Copyright © 2007-2014 United States Government as represented by the 
  **  Administrator of the National Aeronautics and Space Administration. 
@@ -22,7 +22,9 @@
  ** Notes:
  **
  **   $Log: sc_rtsrq.h  $
- **   Revision 1.1.1.6.1.1 2015/03/02 13:05:10EST sstrege 
+ **   Revision 1.2 2015/10/08 15:20:45EDT sstrege 
+ **   Restoration from MKS 2009 Trunk
+ **   Revision 1.1.1.7 2015/03/02 13:00:20EST sstrege 
  **   Added copyright information
  **   Revision 1.1.1.6 2011/09/23 14:27:21EDT lwalling 
  **   Made group commands conditional on configuration definition

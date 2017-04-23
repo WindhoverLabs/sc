@@ -6,6 +6,7 @@ proc $sc_$cpu_sc_start_apps (step_num)
 ;
 ; History:
 ;  12JAN09 WFM	Initial development of this proc
+;  25Oct16 WFM	Added hostCPU variable to specify the actual host to start apps
 ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -28,11 +29,12 @@ local found_app1, found_app2
 local stream1, stream2
 local subStepNum = 1
 local SCAppName = "SC"
+local hostCPU = "$CPU"
 
 write ";*********************************************************************"
 write "; Step ",step_num, ".1: Determine if the applications are running."
 write ";*********************************************************************"
-start get_file_to_cvt ("RAM:0","cfe_es_app_info.log","$sc_$cpu_es_app_info.log","$CPU")
+start get_file_to_cvt ("RAM:0","cfe_es_app_info.log","$sc_$cpu_es_app_info.log",hostCPU)
 
 found_app1 = FALSE
 found_app2 = FALSE
@@ -66,7 +68,7 @@ if (found_app1 = FALSE) then
   ut_setupevents "$SC", "$CPU", "CFE_ES", CFE_ES_START_INF_EID, "INFO", 1
   ut_setupevents "$SC", "$CPU", {SCAppName}, SC_INIT_INF_EID, "INFO", 2
 
-  s load_start_app (SCAppName,"$CPU","SC_AppMain")
+  s load_start_app (SCAppName,hostCPU,"SC_AppMain")
 
   ; Wait for app startup events
   ut_tlmwait  $SC_$CPU_find_event[2].num_found_messages, 1, 70
@@ -103,10 +105,10 @@ if (found_app2 = FALSE) then
   ut_setupevents "$SC", "$CPU", "TST_SC", TST_SC_INIT_INF_EID, "INFO", 2
   ut_setupevents "$SC", "$CPU", {SCAppName}, SC_RTS_START_INF_EID, "INFO", 3
 
-  s load_start_app ("TST_SC","$CPU","TST_SC_AppMain")
+  s load_start_app ("TST_SC",hostCPU,"TST_SC_AppMain")
 
   ; Wait for app startup events
-  ut_tlmwait  $SC_$CPU_find_event[2].num_found_messages, 1
+  ut_tlmwait $SC_$CPU_find_event[2].num_found_messages, 1
   IF (UT_TW_Status = UT_Success) THEN
     if ($SC_$CPU_num_found_messages = 1) then
       write "<*> Passed - TST_SC Application Started"

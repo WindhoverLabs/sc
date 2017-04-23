@@ -1,6 +1,6 @@
 /************************************************************************
 **
-** $Id: sc_rts002.c 1.9 2015/03/02 13:01:56EST sstrege Exp  $
+** $Id: sc_rts002.c 1.2 2015/10/08 15:19:10EDT sstrege Exp  $
 **
 **  Copyright © 2007-2014 United States Government as represented by the 
 **  Administrator of the National Aeronautics and Space Administration. 
@@ -36,6 +36,8 @@
 **         command starts on a word (uint16) boundary.
 **
 ** $Log: sc_rts002.c  $
+** Revision 1.2 2015/10/08 15:19:10EDT sstrege 
+** Restoration from MKS 2009 Trunk
 ** Revision 1.9 2015/03/02 13:01:56EST sstrege 
 ** Added copyright information
 ** Revision 1.8 2014/12/18 17:13:40EST sstrege 

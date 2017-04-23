@@ -23,6 +23,9 @@
 
   \verbatim  
   $Log: cfs_sc.dox  $
+  Revision 1.1 2015/07/28 22:56:40EDT rperera 
+  Initial revision
+  Member added to project /CFS-APPs-PROJECT/sc/docs/dox_src/users_guide/project.pj
   Revision 1.12 2014/12/19 17:17:10EST sstrege 
   Added ATP precaution information to the Operation, Tables, and FAQ sections.
   Revision 1.11 2011/04/22 14:00:50EDT wmoleski 

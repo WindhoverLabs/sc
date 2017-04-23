@@ -1,6 +1,6 @@
  /*************************************************************************
  ** File:
- **   $Id: sc_rtsrq.c 1.11 2015/03/02 12:58:58EST sstrege Exp  $
+ **   $Id: sc_rtsrq.c 1.3 2016/09/09 16:32:09EDT mdeschu Exp  $
  **
  **  Copyright © 2007-2014 United States Government as represented by the 
  **  Administrator of the National Aeronautics and Space Administration. 
@@ -22,6 +22,10 @@
  ** Notes:
  **
  **   $Log: sc_rtsrq.c  $
+ **   Revision 1.3 2016/09/09 16:32:09EDT mdeschu 
+ **   Arguements in CFE_EVS_SendEvent causing format warnings have been explicitly cast to (unsigned int) and (int) same as cFE.
+ **   Revision 1.2 2015/10/08 15:20:44EDT sstrege 
+ **   Restoration from MKS 2009 Trunk
  **   Revision 1.11 2015/03/02 12:58:58EST sstrege 
  **   Added copyright information
  **   Revision 1.10 2014/06/06 11:37:58EDT sjudy 
@@ -261,7 +265,7 @@ void SC_StartRtsGrpCmd (CFE_SB_MsgPtr_t CmdPacket)
             CFE_EVS_SendEvent (SC_STARTRTSGRP_CMD_INF_EID, CFE_EVS_INFORMATION,
                                "Start RTS group: FirstID=%d, LastID=%d, Modified=%d",
                               ((SC_RtsGrpCmd_t *)CmdPacket)->FirstRtsId,
-                              ((SC_RtsGrpCmd_t *)CmdPacket)->LastRtsId, StartCount);
+                              ((SC_RtsGrpCmd_t *)CmdPacket)->LastRtsId, (int)StartCount);
             SC_AppData.CmdCtr++;
         }
         else
@@ -360,7 +364,7 @@ void SC_StopRtsGrpCmd (CFE_SB_MsgPtr_t CmdPacket)
             CFE_EVS_SendEvent (SC_STOPRTSGRP_CMD_INF_EID, CFE_EVS_INFORMATION,
                                "Stop RTS group: FirstID=%d, LastID=%d, Modified=%d",
                               ((SC_RtsGrpCmd_t *)CmdPacket)->FirstRtsId,
-                              ((SC_RtsGrpCmd_t *)CmdPacket)->LastRtsId, StopCount);
+                              ((SC_RtsGrpCmd_t *)CmdPacket)->LastRtsId, (int)StopCount);
             SC_AppData.CmdCtr++;
         }
         else
@@ -459,7 +463,7 @@ void SC_DisableRtsGrpCmd (CFE_SB_MsgPtr_t CmdPacket)
             CFE_EVS_SendEvent (SC_DISRTSGRP_CMD_INF_EID, CFE_EVS_INFORMATION,
                                "Disable RTS group: FirstID=%d, LastID=%d, Modified=%d",
                               ((SC_RtsGrpCmd_t *)CmdPacket)->FirstRtsId,
-                              ((SC_RtsGrpCmd_t *)CmdPacket)->LastRtsId, DisableCount);
+                              ((SC_RtsGrpCmd_t *)CmdPacket)->LastRtsId, (int)DisableCount);
             SC_AppData.CmdCtr++;
         }
         else
@@ -562,7 +566,7 @@ void SC_EnableRtsGrpCmd (CFE_SB_MsgPtr_t CmdPacket)
             CFE_EVS_SendEvent (SC_ENARTSGRP_CMD_INF_EID, CFE_EVS_INFORMATION,
                                "Enable RTS group: FirstID=%d, LastID=%d, Modified=%d",
                               ((SC_RtsGrpCmd_t *)CmdPacket)->FirstRtsId,
-                              ((SC_RtsGrpCmd_t *)CmdPacket)->LastRtsId, EnableCount);
+                              ((SC_RtsGrpCmd_t *)CmdPacket)->LastRtsId, (int)EnableCount);
             SC_AppData.CmdCtr++;
         }
         else

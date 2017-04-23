@@ -116,6 +116,11 @@ PROC $sc_$cpu_sc_gencmds
 ;	Date		   Name		Description
 ;	01/12/09	Walt Moleski	Original Procedure.
 ;	01/25/11	Walt Moleski	Updated for SC 2.1.0.0
+;       10/24/16        Walt Moleski    Updated for SC 2.5.0.0 using CPU1 for
+;                                       commanding and added a hostCPU variable
+;                                       for utility procs that connect to the
+;                                       host IP. Updated Step 2.7 to not expect
+;					the CMD_EC to increment.
 ;
 ;  Arguments
 ;	None.
@@ -177,6 +182,7 @@ local cfe_requirements[0 .. ut_req_array_size] = ["SC_1000", "SC_1001", "SC_1002
 ;**********************************************************************
 LOCAL rawcmd, stream
 local SCAppName = "SC"
+local hostCPU = "$CPU"
 
 write ";***********************************************************************"
 write ";  Step 1.0: Stored Command Test Setup."
@@ -187,9 +193,9 @@ write ";***********************************************************************"
 wait 10
 
 close_data_center
-wait 75
+wait 60
 
-cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 write ";***********************************************************************"
@@ -597,6 +603,7 @@ endif
 
 wait 5
 
+;; NOTE: SC 2.5.0.0 fix to not increment counters for internal commands
 write ";***********************************************************************"
 write ";  Step 2.7: Send the SC Housekeeping request with an invalid length. "
 write ";***********************************************************************"
@@ -607,31 +614,14 @@ local errcnt = $SC_$CPU_SC_CMDEC + 1
 ;; CPU1 is the default
 rawcmd = "18AAc000000201B0"
 
-if ("$CPU" = "CPU2") then
-  rawcmd = "19AAc000000201B0"
-elseif ("$CPU" = "CPU3") then
-  rawcmd = "1AAAc000000201B0"
-endif
-
 ut_sendrawcmd "$SC_$CPU_SC", (rawcmd)
 
-;;NOTE: May have to replace 1005 with 1002 below.
-;;      Not sure if the CMDEC increments either since this is a REQUEST not a command
+;; Determine if the counter increments. If it does, fail the test
 ut_tlmwait $SC_$CPU_SC_CMDEC, {errcnt}
 if (UT_TW_Status = UT_Success) then
-  write "<*> Passed (1005) - Command Rejected Counter incremented."
-  ut_setrequirements SC_1005, "P"
+  write "<!> Failed - Command Rejected Counter incremented on an internal command."
 else
-  write "<!> Failed (1005) - Command Rejected Counter did not increment as expected."
-  ut_setrequirements SC_1005, "F"
-endif
-
-if ($SC_$CPU_num_found_messages = 1) THEN
-  write "<*> Passed (1005) - Event message ",$SC_$CPU_find_event[1].eventid, " received"
-  ut_setrequirements SC_1005, "P"
-else
-  write "<!> Failed (1005) - Event message ",$SC_$CPU_evs_eventid," received. Expected Event message ",SC_LEN_ERR_EID, "."
-  ut_setrequirements SC_1005, "F"
+  write "<*> Passed - Command Rejected Counter did not increment as expected."
 endif
 
 wait 5
@@ -643,9 +633,9 @@ write ";*********************************************************************"
 wait 10
 
 close_data_center
-wait 75
+wait 60
 
-cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 write "**** Requirements Status Reporting"

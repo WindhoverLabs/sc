@@ -1,6 +1,6 @@
 /************************************************************************
 **
-** $Id: sc_ats1.c 1.8 2015/03/02 13:01:50EST sstrege Exp  $
+** $Id: sc_ats1.c 1.2 2015/10/08 15:19:08EDT sstrege Exp  $
 **
 **  Copyright © 2007-2014 United States Government as represented by the 
 **  Administrator of the National Aeronautics and Space Administration. 
@@ -45,6 +45,8 @@
 **         to signal the end of the ATS table (end of data marker).
 **
 ** $Log: sc_ats1.c  $
+** Revision 1.2 2015/10/08 15:19:08EDT sstrege 
+** Restoration from MKS 2009 Trunk
 ** Revision 1.8 2015/03/02 13:01:50EST sstrege 
 ** Added copyright information
 ** Revision 1.7 2015/01/11 18:30:04EST sstrege 

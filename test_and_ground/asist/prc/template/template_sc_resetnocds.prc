@@ -144,6 +144,10 @@ PROC $sc_$cpu_sc_resetnocds
 ;	02/04/09	Walt Moleski	Original Procedure.
 ;       01/24/11        Walt Moleski    Updated for SC 2.1.0.0
 ;       08/31/11        Walt Moleski    Updated for SC 2.2.0.0
+;       10/24/16        Walt Moleski    Updated for SC 2.5.0.0 using CPU1 for
+;                                       commanding and added a hostCPU variable
+;                                       for utility procs that connect to the
+;                                       host IP.
 ;
 ;  Arguments
 ;	None.
@@ -221,6 +225,7 @@ local ramDir = "RAM:0"
 local ATSATblName = SCAppName & "." & SC_ATS_TABLE_NAME & "1"
 local RTS3TblName = SCAppName & "." & SC_RTS_TABLE_NAME & "003"
 local RTS4TblName = SCAppName & "." & SC_RTS_TABLE_NAME & "004"
+local hostCPU = "$CPU"
 
 ;; Set the pkt and app Ids for the appropriate CPU
 ;; CPU1 is the default
@@ -252,7 +257,7 @@ wait 10
 close_data_center
 wait 75
 
-cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 write ";***********************************************************************"
@@ -489,7 +494,7 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_ats_a_load10", "$CPU")
+start load_table ("$cpu_ats_a_load10", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -573,7 +578,7 @@ else
 endif
 
 ;; Need to dump the ATS table
-s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl2_3","$CPU",atsPktId)
+s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl2_3",hostCPU,atsPktId)
 
 wait 5
 
@@ -600,8 +605,8 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 2
 
-start load_table ("$cpu_rts003_load", "$CPU")
-start load_table ("$cpu_rts004_load", "$CPU")
+start load_table ("$cpu_rts003_load", hostCPU)
+start load_table ("$cpu_rts004_load", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -703,7 +708,7 @@ else
 endif
 
 ;; Need to dump the RTS table
-s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl2_6","$CPU",rtsPktId)
+s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl2_6",hostCPU,rtsPktId)
 
 wait 5
 
@@ -838,7 +843,7 @@ wait 10
 close_data_center
 wait 75
 
-cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 write ";***********************************************************************"
@@ -1004,10 +1009,10 @@ else
 endif
 
 ;; Need to dump the ATS table
-s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl2_15","$CPU",atsPktId)
+s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl2_15",hostCPU,atsPktId)
 
 ;; Need to dump the RTS table
-s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl2_15","$CPU",rtsPktId)
+s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl2_15",hostCPU,rtsPktId)
 
 wait 5
 
@@ -1049,7 +1054,7 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO",1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_ats_a_load10", "$CPU")
+start load_table ("$cpu_ats_a_load10", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -1133,7 +1138,7 @@ else
 endif
 
 ;; Need to dump the ATS table
-s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl3_3","$CPU",atsPktId)
+s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl3_3",hostCPU,atsPktId)
 
 wait 5
 
@@ -1145,8 +1150,8 @@ ut_setupevents "$SC", "$CPU", CFE_TBL, CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 2
 
-start load_table ("$cpu_rts003_load", "$CPU")
-start load_table ("$cpu_rts004_load", "$CPU")
+start load_table ("$cpu_rts003_load", hostCPU)
+start load_table ("$cpu_rts004_load", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -1244,7 +1249,7 @@ else
 endif
 
 ;; Need to dump the ATS table
-s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl3_7","$CPU",rtsPktId)
+s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl3_7",hostCPU,rtsPktId)
 
 wait 5
 
@@ -1564,10 +1569,10 @@ else
 endif
 
 ;; Need to dump the ATS table
-s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl3_15","$CPU",atsPktId)
+s get_tbl_to_cvt (ramDir,ATSATblName,"A","$cpu_atsa_tbl3_15",hostCPU,atsPktId)
 
 ;; Need to dump the RTS table
-s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl3_15","$CPU",rtsPktId)
+s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl3_15",hostCPU,rtsPktId)
 
 wait 5
 
@@ -1593,8 +1598,8 @@ write "==> RTS #1 Load file name = '",rts1FileName,"'"
 write "==> RTS #2 Load file name = '",rts2FileName,"'"
 
 ;; Remove the files
-s ftp_file ("CF:0/apps", rts1FileName, rts1FileName,"$CPU","R")
-s ftp_file ("CF:0/apps", rts2FileName, rts2FileName,"$CPU","R")
+s ftp_file ("CF:0/apps", rts1FileName, rts1FileName,hostCPU,"R")
+s ftp_file ("CF:0/apps", rts2FileName, rts2FileName,hostCPU,"R")
 
 wait 5
 
@@ -1607,7 +1612,7 @@ wait 10
 close_data_center
 wait 75
 
-cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 write ";***********************************************************************"
@@ -1947,8 +1952,8 @@ write ";*********************************************************************"
 write ";  Step 4.10: Send the file back up to $CPU. "
 write ";*********************************************************************"
 ;; ftp the files back to the appropriate location
-s ftp_file ("CF:0/apps", rts1FileName, rts1FileName,"$CPU","P")
-s ftp_file ("CF:0/apps", rts2FileName, rts2FileName,"$CPU","P")
+s ftp_file ("CF:0/apps", rts1FileName, rts1FileName,hostCPU,"P")
+s ftp_file ("CF:0/apps", rts2FileName, rts2FileName,hostCPU,"P")
 
 wait 5
 
@@ -1961,7 +1966,7 @@ wait 10
 close_data_center
 wait 75
 
-cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 

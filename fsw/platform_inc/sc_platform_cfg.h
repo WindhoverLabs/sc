@@ -1,6 +1,6 @@
  /*************************************************************************
  ** File:
- **   $Id: sc_platform_cfg.h 1.13 2015/03/02 12:58:43EST sstrege Exp  $
+ **   $Id: sc_platform_cfg.h 1.2 2015/11/20 12:03:20EST sstrege Exp  $
  **
  **  Copyright © 2007-2014 United States Government as represented by the 
  **  Administrator of the National Aeronautics and Space Administration. 
@@ -21,6 +21,8 @@
  ** Notes:
  **
  **   $Log: sc_platform_cfg.h  $ 
+ **   Revision 1.2 2015/11/20 12:03:20EST sstrege  
+ **   Restoration from MKS 2009 Trunk 
  **   Revision 1.13 2015/03/02 12:58:43EST sstrege  
  **   Added copyright information 
  **   Revision 1.12 2011/09/26 13:39:35EDT lwalling  

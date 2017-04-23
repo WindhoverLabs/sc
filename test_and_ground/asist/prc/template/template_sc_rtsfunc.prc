@@ -170,6 +170,10 @@ PROC $sc_$cpu_sc_rtsfunc
 ;	Date		   Name		Description
 ;	01/12/09	Walt Moleski	Original Procedure.
 ;       01/25/11        Walt Moleski    Updated for SC 2.1.0.0
+;       10/24/16        Walt Moleski    Updated for SC 2.5.0.0 using CPU1 for
+;                                       commanding and added a hostCPU variable
+;                                       for utility procs that connect to the
+;                                       host IP.
 ;
 ;  Arguments
 ;	None.
@@ -276,6 +280,7 @@ local RTS8TblName = SCAppName & "." & SC_RTS_TABLE_NAME & "008"
 local RTS9TblName = SCAppName & "." & SC_RTS_TABLE_NAME & "009"
 local RTS10TblName = SCAppName & "." & SC_RTS_TABLE_NAME & "010"
 local RTS15TblName = SCAppName & "." & SC_RTS_TABLE_NAME & "015"
+local hostCPU = "$CPU"
 
 ;; Set the pkt and app Ids for the appropriate CPU
 ;; CPU1 is the default
@@ -301,7 +306,7 @@ wait 10
 close_data_center
 wait 75
 
-cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 write ";***********************************************************************"
@@ -500,7 +505,7 @@ write ";***********************************************************************"
 write ";  Step 1.8: Verify that all RTS tables have been allocated.            "
 write ";***********************************************************************"
 ;; Dump the table registry and count the number of RTS tables
-s get_file_to_cvt (ramDir, "cfe_tbl_reg.log", "$sc_$cpu_tbl_reg.log", "$CPU")
+s get_file_to_cvt (ramDir, "cfe_tbl_reg.log", "$sc_$cpu_tbl_reg.log", hostCPU)
 wait 10
 
 local rtsTable,rtsTblCnt
@@ -529,7 +534,7 @@ else
 endif
 
 ;; Need to dump an RTS table
-s get_tbl_to_cvt (ramDir,RTS2TblName,"A","$cpu_rts2_tbl2_4","$CPU",rtsPktId)
+s get_tbl_to_cvt (ramDir,RTS2TblName,"A","$cpu_rts2_tbl2_4",hostCPU,rtsPktId)
 
 ;; Write each word of the dump table to fully verify that SC_RTS_BUFF_SIZE
 ;; word are stored in the RTS Table
@@ -611,7 +616,7 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_rts002_load", "$CPU")
+start load_table ("$cpu_rts002_load", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -709,7 +714,7 @@ else
 endif
 
 ;; Need to dump the RTS table
-s get_tbl_to_cvt (ramDir,RTS2TblName,"A","$cpu_rts2_tbl2_4","$CPU",rtsPktId)
+s get_tbl_to_cvt (ramDir,RTS2TblName,"A","$cpu_rts2_tbl2_4",hostCPU,rtsPktId)
 
 wait 5
 
@@ -902,7 +907,7 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_rts003_load", "$CPU")
+start load_table ("$cpu_rts003_load", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -999,7 +1004,7 @@ else
 endif
 
 ;; Need to dump the RTS table
-s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl2_12","$CPU",rtsPktId)
+s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl2_12",hostCPU,rtsPktId)
 
 wait 5
 
@@ -1056,7 +1061,7 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_rts008_load", "$CPU")
+start load_table ("$cpu_rts008_load", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -1153,7 +1158,7 @@ else
 endif
 
 ;; Need to dump the RTS table
-s get_tbl_to_cvt (ramDir,RTS8TblName,"A","$cpu_rts8_tbl2_16","$CPU",rtsPktId)
+s get_tbl_to_cvt (ramDir,RTS8TblName,"A","$cpu_rts8_tbl2_16",hostCPU,rtsPktId)
 
 wait 5
 
@@ -1320,7 +1325,7 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_rts005_load", "$CPU")
+start load_table ("$cpu_rts005_load", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -1417,7 +1422,7 @@ else
 endif
 
 ;; Need to dump the RTS table
-s get_tbl_to_cvt (ramDir,RTS5TblName,"A","$cpu_rts5_tbl2_23","$CPU",rtsPktId)
+s get_tbl_to_cvt (ramDir,RTS5TblName,"A","$cpu_rts5_tbl2_23",hostCPU,rtsPktId)
 
 wait 5
 
@@ -1539,7 +1544,7 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_rts004_load", "$CPU")
+start load_table ("$cpu_rts004_load", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -1636,7 +1641,7 @@ else
 endif
 
 ;; Need to dump the RTS table
-s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl2_29","$CPU",rtsPktId)
+s get_tbl_to_cvt (ramDir,RTS4TblName,"A","$cpu_rts4_tbl2_29",hostCPU,rtsPktId)
 
 wait 5
 
@@ -1822,7 +1827,7 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_rts007_load", "$CPU")
+start load_table ("$cpu_rts007_load", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -1919,7 +1924,7 @@ else
 endif
 
 ;; Need to dump the RTS table
-s get_tbl_to_cvt (ramDir,RTS7TblName,"A","$cpu_rts7_tbl2_37","$CPU",rtsPktId)
+s get_tbl_to_cvt (ramDir,RTS7TblName,"A","$cpu_rts7_tbl2_37",hostCPU,rtsPktId)
 
 wait 5
 
@@ -2036,7 +2041,7 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_rts3oddbyteld", "$CPU")
+start load_table ("$cpu_rts3oddbyteld", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -2133,7 +2138,7 @@ else
 endif
 
 ;; Need to dump the RTS table
-s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl2_12","$CPU",rtsPktId)
+s get_tbl_to_cvt (ramDir,RTS3TblName,"A","$cpu_rts3_tbl2_12",hostCPU,rtsPktId)
 
 wait 5
 
@@ -3770,14 +3775,14 @@ enddo
 local endmnemonic = "$SC_$CPU_SC_RTSDATA[" & SC_RTS_BUFF_SIZE & "]"
 
 ;; Create the RTS Table Load file
-s create_tbl_file_from_cvt ("$CPU",rtsPktId,"RTS #6 Table Load","$cpu_rts006_load",RTS6TblName,"$SC_$CPU_SC_RTSDATA[1]",endmnemonic)
+s create_tbl_file_from_cvt (hostCPU,rtsPktId,"RTS #6 Table Load","$cpu_rts006_load",RTS6TblName,"$SC_$CPU_SC_RTSDATA[1]",endmnemonic)
 
 ;; Load the table
 ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_rts006_load", "$CPU")
+start load_table ("$cpu_rts006_load", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -3793,7 +3798,7 @@ else
 endif
 
 ;; Need to dump the RTS table
-s get_tbl_to_cvt (ramDir,RTS6TblName,"I","$cpu_rts6_tbl4_1","$CPU",rtsPktId)
+s get_tbl_to_cvt (ramDir,RTS6TblName,"I","$cpu_rts6_tbl4_1",hostCPU,rtsPktId)
 
 wait 5
 
@@ -3885,14 +3890,14 @@ $SC_$CPU_SC_RTSDATA[15] = x'0026'
 $SC_$CPU_SC_RTSDATA[20] = x'0120'
 
 ;; Create the RTS Table Load file
-s create_tbl_file_from_cvt ("$CPU",rtsPktId,"RTS #9 Table Load","$cpu_rts009_load",RTS9TblName,"$SC_$CPU_SC_RTSDATA[1]",endmnemonic)
+s create_tbl_file_from_cvt (hostCPU,rtsPktId,"RTS #9 Table Load","$cpu_rts009_load",RTS9TblName,"$SC_$CPU_SC_RTSDATA[1]",endmnemonic)
 
 ;; Load the table
 ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_rts009_load", "$CPU")
+start load_table ("$cpu_rts009_load", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -3989,7 +3994,7 @@ else
 endif
 
 ;; Need to dump the RTS table
-s get_tbl_to_cvt (ramDir,RTS9TblName,"A","$cpu_rts9_tbl4_5","$CPU",rtsPktId)
+s get_tbl_to_cvt (ramDir,RTS9TblName,"A","$cpu_rts9_tbl4_5",hostCPU,rtsPktId)
 
 wait 5
 
@@ -4246,7 +4251,7 @@ wait 5
 write ";***********************************************************************"
 write ";  Step 4.12.2: Send the Start command for RTS #11.                   "
 write ";***********************************************************************"
-ut_setupevents "$SC", "$CPU", {SCAppName}, SC_STARTRTS_CMD_NOT_LDED_ERR_EID, "ERROR", 1
+ut_setupevents "$SC","$CPU",{SCAppName},SC_STARTRTS_CMD_NOT_LDED_ERR_EID,"ERROR", 1
 
 errcnt = $SC_$CPU_SC_CMDEC + 1
 ;; Send the Command
@@ -4288,14 +4293,14 @@ for i = 1 to SC_RTS_BUFF_SIZE DO
 enddo
 
 ;; Create the RTS Table Load file
-s create_tbl_file_from_cvt ("$CPU",rtsPktId,"RTS #10 Table Load", "$cpu_rts010_load",RTS10TblName, "$SC_$CPU_SC_RTSDATA[1]",endmnemonic)
+s create_tbl_file_from_cvt (hostCPU,rtsPktId,"RTS #10 Table Load", "$cpu_rts010_load",RTS10TblName, "$SC_$CPU_SC_RTSDATA[1]",endmnemonic)
 
 ;; Load the table
 ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_rts010_load", "$CPU")
+start load_table ("$cpu_rts010_load", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -4391,7 +4396,7 @@ else
 endif
 
 ;; Need to dump the RTS table
-s get_tbl_to_cvt (ramDir,RTS10TblName,"A","$cpu_rts10_tbl4_15","$CPU",rtsPktId)
+s get_tbl_to_cvt (ramDir,RTS10TblName,"A","$cpu_rts10_tbl4_15",hostCPU,rtsPktId)
 
 wait 5
 
@@ -4443,7 +4448,7 @@ write ";***********************************************************************"
 write ";  Step 4.17: Send the Start command for RTS #10. Since the table is    "
 write ";  empty, this command should be rejected. "
 write ";***********************************************************************"
-ut_setupevents "$SC", "$CPU", {SCAppName}, SC_STARTRTS_CMD_INVLD_LEN_ERR_EID, "ERROR", 1
+ut_setupevents "$SC","$CPU",{SCAppName},SC_STARTRTS_CMD_INVLD_LEN_ERR_EID,"ERROR", 1
 
 errcnt = $SC_$CPU_SC_CMDEC + 1
 ;; Send the Command
@@ -4480,32 +4485,6 @@ write ";***********************************************************************"
 write ";  Step 4.18: Create and load an RTS table (#15) that contains the  "
 write ";  maximum number of commands with the last command running off the end."
 write ";***********************************************************************"
-;; Need to check if the .scs file used below exists. If not, end the proc
-;;filename = work & "/image/$sc_$cpu_rts15_load.scs"
-;;if NOT file_exists(filename) then
-;;  write "<!> Failed - Expected load file '",filename, "' not found. Skipping this test."
-;;  goto step5_0
-;;endif
-;;
-;; Using the SCP utilities, compile and build the RTS 9 load file
-;;compile_rts "$sc_$cpu_rts15_load" 15
-;;s $sc_$cpu_load_ats_rts("$sc_$cpu_rts15_load","$cpu_rts015_load",0,1)
-;;
-;;;; Load the last command so that it runs off the end of the buffer
-;;$SC_$CPU_SC_RTSDATA[141] = x'192B'
-;;$SC_$CPU_SC_RTSDATA[142] = x'C000'
-;;$SC_$CPU_SC_RTSDATA[143] = x'0027'
-;;$SC_$CPU_SC_RTSDATA[144] = x'0365'
-;;$SC_$CPU_SC_RTSDATA[145] = x'5343'
-;;$SC_$CPU_SC_RTSDATA[146] = x'2E41'
-;;$SC_$CPU_SC_RTSDATA[147] = x'5453'
-;;$SC_$CPU_SC_RTSDATA[148] = x'5F54'
-;;$SC_$CPU_SC_RTSDATA[149] = x'424C'
-;;$SC_$CPU_SC_RTSDATA[150] = x'3100'
-;;
-;;;; Create the RTS Table Load file
-;;s create_tbl_file_from_cvt ("$CPU",rtsPktId,"RTS #15 Table Load", "$cpu_rts015_load",RTS15TblName, "$SC_$CPU_SC_RTSDATA[1]",endmnemonic)
-
 ;; Create the load file
 s $sc_$cpu_sc_rtsoffend
 
@@ -4514,7 +4493,7 @@ ut_setupevents "$SC", "$CPU", "CFE_TBL", CFE_TBL_FILE_LOADED_INF_EID, "INFO", 1
 
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
-start load_table ("$cpu_rts015_load", "$CPU")
+start load_table ("$cpu_rts015_load", hostCPU)
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
 if (UT_TW_Status = UT_Success) then
@@ -4577,7 +4556,7 @@ wait 10
 close_data_center
 wait 75
                                                                                 
-cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 

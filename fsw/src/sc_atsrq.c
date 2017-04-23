@@ -1,6 +1,6 @@
  /*************************************************************************
  ** File:
- **   $Id: sc_atsrq.c 1.14 2015/03/02 12:58:54EST sstrege Exp  $
+ **   $Id: sc_atsrq.c 1.6 2016/10/06 07:56:47EDT mdeschu Exp  $
  **
  **  Copyright © 2007-2014 United States Government as represented by the 
  **  Administrator of the National Aeronautics and Space Administration. 
@@ -22,6 +22,18 @@
  ** Notes:
  **
  **   $Log: sc_atsrq.c  $
+ **   Revision 1.6 2016/10/06 07:56:47EDT mdeschu 
+ **   Fix Format warning in SendEvent with event ID SC_APPEND_CMD_FIT_ERR_EID
+ **   
+ **   Cast SC_OperData.AtsInfoTblAddr[AtsIndex].AtsSize to (int)
+ **   Revision 1.5 2016/08/28 00:26:38EDT mdeschu 
+ **   Compiling under GCC 4.4.7 does not cause unitialized warnings for these variables.
+ **   Revision 1.4 2016/08/18 11:28:05EDT mdeschu 
+ **   Fix formatting only
+ **   Revision 1.3 2016/08/05 18:08:30EDT mdeschu 
+ **   Initialize CmdIndex in SC_JumpAts and SC_BeginAts
+ **   Revision 1.2 2015/10/08 15:20:27EDT sstrege 
+ **   Restoration from MKS 2009 Trunk
  **   Revision 1.14 2015/03/02 12:58:54EST sstrege 
  **   Added copyright information
  **   Revision 1.13 2014/06/06 11:37:49EDT sjudy 
@@ -775,7 +787,7 @@ void SC_AppendAtsCmd (CFE_SB_MsgPtr_t CmdPacket)
             
             CFE_EVS_SendEvent(SC_APPEND_CMD_FIT_ERR_EID, CFE_EVS_ERROR,
                              "Append ATS %c error: ATS size = %d, Append size = %d, ATS buffer = %d",
-                             'A' + AtsIndex, SC_OperData.AtsInfoTblAddr[AtsIndex].AtsSize,
+                             'A' + AtsIndex, (int)SC_OperData.AtsInfoTblAddr[AtsIndex].AtsSize,
                               SC_AppData.AppendWordCount, SC_ATS_BUFF_SIZE);
         }
         else

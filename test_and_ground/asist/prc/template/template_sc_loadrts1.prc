@@ -14,6 +14,7 @@ local logging = %liv (log_procedure)
 ;**********************************************************************
 local rtsFileName = SC_RTS_FILE_NAME
 local slashLoc = %locate(rtsFileName,"/")
+local hostCPU = "$CPU"
 
 ;; loop until all slashes are found
 while (slashLoc <> 0) do
@@ -31,6 +32,6 @@ compile_rts "$sc_$cpu_rts1_load" 1
 s $sc_$cpu_load_ats_rts("$sc_$cpu_rts1_load",rtsFileName)
 
 ;; ftp the file to the appropriate location
-s ftp_file ("CF:0/apps", rtsFileName, rtsFileName,"$CPU","P")
+s ftp_file ("CF:0/apps", rtsFileName, rtsFileName,hostCPU,"P")
 
 ENDPROC

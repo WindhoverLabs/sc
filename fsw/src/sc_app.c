@@ -1,6 +1,6 @@
 /*************************************************************************
  ** File:
- **   $Id: sc_app.c 1.16 2015/03/02 12:58:46EST sstrege Exp  $
+ **   $Id: sc_app.c 1.6 2016/09/09 16:32:09EDT mdeschu Exp  $
  **
  **  Copyright © 2007-2014 United States Government as represented by the 
  **  Administrator of the National Aeronautics and Space Administration. 
@@ -23,6 +23,14 @@
  **
  ** History:
  **   $Log: sc_app.c  $
+ **   Revision 1.6 2016/09/09 16:32:09EDT mdeschu 
+ **   Arguements in CFE_EVS_SendEvent causing format warnings have been explicitly cast to (unsigned int) and (int) same as cFE.
+ **   Revision 1.5 2016/08/05 17:53:50EDT mdeschu 
+ **   Ticket #31 - SC: Fix compiler errors/warnings when using strct settings
+ **   Revision 1.4 2015/12/08 14:56:36EST czogby 
+ **   Move function prototypes into .h files
+ **   Revision 1.3 2015/10/08 16:04:24EDT sstrege 
+ **   Restoration from MKS 2009 Trunk
  **   Revision 1.16 2015/03/02 12:58:46EST sstrege 
  **   Added copyright information
  **   Revision 1.15 2014/06/09 16:51:10EDT sjudy 
@@ -70,171 +78,6 @@
 #include "sc_msgids.h"
 #include "sc_perfids.h"
 #include "sc_version.h"
-
-
-/**************************************************************************
- **
- ** Function prototypes
- **
- **************************************************************************/
-
-/************************************************************************/
-/** \brief Main loop for SC
- **  
- **  \par Description
- **       This function is the entry point and main loop for the Stored
- **       Commands (SC) application.
- **       
- **  \par Assumptions, External Events, and Notes:
- **        None
- **
- *************************************************************************/
-void SC_AppMain (void);
-
-/************************************************************************/
-/** \brief Initialize application
- **  
- **  \par Description
- **       This function initializes the SC application. The return value
- **       is either CFE_SUCCESS or the error code from the failed cFE
- **       function call. Note that all errors generate an identifying
- **       event message.
- **       
- **  \par Assumptions, External Events, and Notes:
- **        None
- **
- **  \returns
- **  \retcode #CFE_SUCCESS \retdesc \copydoc CFE_SUCCESS \endcode
- **  \retstmt Return status from CFE initialization function \endcode
- **  \endreturns
- **
- *************************************************************************/
-int32 SC_AppInit (void);
-
-/************************************************************************/
-/** \brief Initialize application tables
- **  
- **  \par Description
- **       This function initializes the SC application tables. The
- **       return value is either CFE_SUCCESS or the error code from the
- **       failed cFE function call. Note that all errors generate an
- **       identifying event message.
- **       
- **  \par Assumptions, External Events, and Notes:
- **        None
- **
- **  \returns
- **  \retcode #CFE_SUCCESS \retdesc \copydoc CFE_SUCCESS \endcode
- **  \retstmt Return status from CFE initialization function \endcode
- **  \endreturns
- **
- *************************************************************************/
-int32 SC_InitTables (void);
-
-/************************************************************************/
-/** \brief Register tables with cFE Table Services
- **  
- **  \par Description
- **       This function registers all SC tables with cFE Table Services.
- **       The return value is either CFE_SUCCESS or the error code from
- **       the failed cFE function call. Note that all errors generate an
- **       identifying event message.
- **       
- **  \par Assumptions, External Events, and Notes:
- **        None
- **
- **  \returns
- **  \retcode #CFE_SUCCESS \retdesc \copydoc CFE_SUCCESS \endcode
- **  \retstmt Return status from CFE initialization function \endcode
- **  \endreturns
- **
- *************************************************************************/
-int32 SC_RegisterAllTables (void);
-
-/************************************************************************/
-/** \brief Get dump only table buffer pointers
- **  
- **  \par Description
- **       This function acquires buffer pointers to the dump only tables.
- **       The return value is either CFE_SUCCESS or the error code from
- **       the failed cFE function call. Note that all errors generate an
- **       identifying event message.
- **       
- **  \par Assumptions, External Events, and Notes:
- **        None
- **
- **  \returns
- **  \retcode #CFE_SUCCESS \retdesc \copydoc CFE_SUCCESS \endcode
- **  \retstmt Return status from CFE initialization function \endcode
- **  \endreturns
- **
- *************************************************************************/
-int32 SC_GetDumpTablePointers (void);
-
-/************************************************************************/
-/** \brief Get loadable table buffer pointers
- **  
- **  \par Description
- **       This function acquires buffer pointers to the loadable tables.
- **       The return value is either CFE_SUCCESS or the error code from
- **       the failed cFE function call. Note that all errors generate an
- **       identifying event message.
- **       
- **  \par Assumptions, External Events, and Notes:
- **        None
- **
- **  \returns
- **  \retcode #CFE_SUCCESS \retdesc \copydoc CFE_SUCCESS \endcode
- **  \retstmt Return status from CFE initialization function \endcode
- **  \endreturns
- **
- *************************************************************************/
-int32 SC_GetLoadTablePointers (void);
-
-/************************************************************************/
-/** \brief Load default RTS tables
- **  
- **  \par Description
- **       This function loads the default RTS tables. The return value
- **       is either CFE_SUCCESS or the error code from the failed cFE
- **       function call. Note that all errors generate an identifying
- **       event message.
- **       
- **  \par Assumptions, External Events, and Notes:
- **        None
- **
- **  \returns
- **  \retcode #CFE_SUCCESS \retdesc \copydoc CFE_SUCCESS \endcode
- **  \retstmt Return status from CFE initialization function \endcode
- **  \endreturns
- **
- *************************************************************************/
-void  SC_LoadDefaultTables (void);
-
-/************************************************************************/
-/** \brief Register to receive cFE Table Services manage request commands
- **
- **  \par Description
- **       This function provides cFE Table Services with the information
- **       necessary to send a notification command when one of the SC dump
- **       only tables has a dump pending, or when one of the SC loadable
- **       tables has a load pending.  Upon receipt of the command, the
- **       command handler will call the cFE Table Services API function
- **       to manage the table.  This sequence of events ensures that dump
- **       tables are not being updated by SC at the same moment that the
- **       dump occurs, and likewise, that loadable tables are not being
- **       referenced by SC at the moment that the update occurs.
- **
- **  \par Assumptions, External Events, and Notes:
- **        None
- **
- **  \param [in]         (none)
- **
- **  \sa #SC_TableManageCmd
- **
- *************************************************************************/
-void SC_RegisterManageCmds(void);
-
 
 /**************************************************************************
  **
@@ -312,10 +155,10 @@ void SC_AppMain(void)
     {
         /* Send event describing reason for termination */
         CFE_EVS_SendEvent(SC_APP_EXIT_ERR_EID, CFE_EVS_ERROR,
-           "App terminating, Result = 0x%08X", Result);
+           "App terminating, Result = 0x%08X", (unsigned int)Result);
 
         /* In case cFE Event Services is not working */
-        CFE_ES_WriteToSysLog("SC App terminating, Result = 0x%08X\n", Result);
+        CFE_ES_WriteToSysLog("SC App terminating, Result = 0x%08X\n", (unsigned int)Result);
     }
 
     /* Performance Log (stop time counter) */
@@ -369,7 +212,7 @@ int32 SC_AppInit(void)
     Result = CFE_EVS_Register(NULL,0,CFE_EVS_NO_FILTER);
     if (Result !=  CFE_SUCCESS)
     {
-        CFE_ES_WriteToSysLog("Event Services Register returned: 0x%08X\n", Result);
+        CFE_ES_WriteToSysLog("Event Services Register returned: 0x%08X\n", (unsigned int)Result);
         return(Result);
     }
 
@@ -378,7 +221,7 @@ int32 SC_AppInit(void)
     if (Result !=  CFE_SUCCESS)
     {
         CFE_EVS_SendEvent(SC_INIT_SB_CREATE_ERR_EID, CFE_EVS_ERROR,
-                         "Software Bus Create Pipe returned: 0x%08X", Result);
+                         "Software Bus Create Pipe returned: 0x%08X", (unsigned int)Result);
         return(Result);
     }
     
@@ -387,7 +230,7 @@ int32 SC_AppInit(void)
     if (Result !=  CFE_SUCCESS)
     {
         CFE_EVS_SendEvent(SC_INIT_SB_SUBSCRIBE_HK_ERR_EID, CFE_EVS_ERROR,
-                         "Software Bus subscribe to housekeeping returned: 0x%08X", Result);
+                         "Software Bus subscribe to housekeeping returned: 0x%08X", (unsigned int)Result);
         return(Result);
     }
     
@@ -396,7 +239,7 @@ int32 SC_AppInit(void)
     if (Result !=  CFE_SUCCESS)
     {
         CFE_EVS_SendEvent(SC_INIT_SB_SUBSCRIBE_1HZ_ERR_EID, CFE_EVS_ERROR,
-                         "Software Bus subscribe to 1 Hz cycle returned: 0x%08X", Result);        
+                         "Software Bus subscribe to 1 Hz cycle returned: 0x%08X", (unsigned int)Result);        
         return(Result);
     }
 
@@ -405,7 +248,7 @@ int32 SC_AppInit(void)
     if (Result !=  CFE_SUCCESS)
     {
         CFE_EVS_SendEvent(SC_INIT_SB_SUBSCRIBE_CMD_ERR_EID, CFE_EVS_ERROR,
-                         "Software Bus subscribe to command returned: 0x%08X", Result);
+                         "Software Bus subscribe to command returned: 0x%08X", (unsigned int)Result);
         return(Result);
     }
 
@@ -521,7 +364,7 @@ int32 SC_RegisterAllTables(void)
     if (Result != CFE_SUCCESS)
     {
         CFE_EVS_SendEvent(SC_REGISTER_RTS_INFO_TABLE_ERR_EID, CFE_EVS_ERROR,
-           "RTS info table register failed, returned: 0x%08X", Result);
+           "RTS info table register failed, returned: 0x%08X", (unsigned int)Result);
         return(Result);
     }
 
@@ -532,7 +375,7 @@ int32 SC_RegisterAllTables(void)
     if (Result != CFE_SUCCESS)
     {
         CFE_EVS_SendEvent(SC_REGISTER_RTS_CTRL_BLK_TABLE_ERR_EID, CFE_EVS_ERROR,
-           "RTS control block table register failed, returned: 0x%08X", Result);
+           "RTS control block table register failed, returned: 0x%08X", (unsigned int)Result);
         return(Result);
     }
 
@@ -543,7 +386,7 @@ int32 SC_RegisterAllTables(void)
     if (Result != CFE_SUCCESS)
     {
         CFE_EVS_SendEvent(SC_REGISTER_ATS_INFO_TABLE_ERR_EID, CFE_EVS_ERROR,
-           "ATS Info table register failed, returned: 0x%08X", Result);
+           "ATS Info table register failed, returned: 0x%08X", (unsigned int)Result);
         return(Result);
     }
     
@@ -554,7 +397,7 @@ int32 SC_RegisterAllTables(void)
     if (Result != CFE_SUCCESS)
     {
         CFE_EVS_SendEvent(SC_REGISTER_APPEND_INFO_TABLE_ERR_EID, CFE_EVS_ERROR,
-           "Append ATS Info table register failed, returned: 0x%08X", Result);
+           "Append ATS Info table register failed, returned: 0x%08X", (unsigned int)Result);
         return(Result);
     }
     
@@ -565,7 +408,7 @@ int32 SC_RegisterAllTables(void)
     if (Result != CFE_SUCCESS)
     {
         CFE_EVS_SendEvent(SC_REGISTER_ATS_CTRL_BLK_TABLE_ERR_EID, CFE_EVS_ERROR,
-           "ATS control block table register failed, returned: 0x%08X", Result);
+           "ATS control block table register failed, returned: 0x%08X", (unsigned int)Result);
         return(Result);
     }
     
@@ -579,7 +422,7 @@ int32 SC_RegisterAllTables(void)
         if (Result != CFE_SUCCESS)
         {
             CFE_EVS_SendEvent(SC_REGISTER_ATS_CMD_STATUS_TABLE_ERR_EID, CFE_EVS_ERROR,
-               "ATS command status table register failed for ATS %d, returned: 0x%08X", i+1, Result);
+               "ATS command status table register failed for ATS %d, returned: 0x%08X", i+1, (unsigned int)Result);
             return(Result);
         }
     }
@@ -595,7 +438,7 @@ int32 SC_RegisterAllTables(void)
         if (Result != CFE_SUCCESS)
         {
             CFE_EVS_SendEvent(SC_REGISTER_RTS_TBL_ERR_EID, CFE_EVS_ERROR,
-               "RTS Table Registration Failed for RTS %d, returned: 0x%08X", i+1, Result);                      
+               "RTS Table Registration Failed for RTS %d, returned: 0x%08X", i+1, (unsigned int)Result);                      
             return(Result);
         }    
     }
@@ -611,7 +454,7 @@ int32 SC_RegisterAllTables(void)
         if (Result != CFE_SUCCESS)
         {
             CFE_EVS_SendEvent(SC_REGISTER_ATS_TBL_ERR_EID, CFE_EVS_ERROR,
-               "ATS Table Registration Failed for ATS %d, returned: 0x%08X", i+1, Result);
+               "ATS Table Registration Failed for ATS %d, returned: 0x%08X", i+1, (unsigned int)Result);
             return(Result);
         }    
     }    
@@ -624,7 +467,7 @@ int32 SC_RegisterAllTables(void)
     if (Result != CFE_SUCCESS)
     {
         CFE_EVS_SendEvent(SC_REGISTER_APPEND_TBL_ERR_EID, CFE_EVS_ERROR,
-           "Append ATS Table Registration Failed, returned: 0x%08X", Result);
+           "Append ATS Table Registration Failed, returned: 0x%08X", (unsigned int)Result);
         return(Result);
     }    
 
@@ -649,7 +492,7 @@ int32 SC_GetDumpTablePointers(void)
     if (Result != CFE_SUCCESS)
     {
         CFE_EVS_SendEvent(SC_GET_ADDRESS_RTS_INFO_ERR_EID, CFE_EVS_ERROR,
-           "RTS Info table failed Getting Address, returned: 0x%08X", Result);
+           "RTS Info table failed Getting Address, returned: 0x%08X", (unsigned int)Result);
         return(Result);
     }
 
@@ -658,7 +501,7 @@ int32 SC_GetDumpTablePointers(void)
     if (Result != CFE_SUCCESS)
     {
         CFE_EVS_SendEvent(SC_GET_ADDRESS_RTS_CTRL_BLCK_ERR_EID, CFE_EVS_ERROR,
-           "RTS Ctrl Blck table failed Getting Address, returned: 0x%08X", Result);
+           "RTS Ctrl Blck table failed Getting Address, returned: 0x%08X", (unsigned int)Result);
         return(Result);
     }
 
@@ -667,7 +510,7 @@ int32 SC_GetDumpTablePointers(void)
     if (Result != CFE_SUCCESS)
     {
         CFE_EVS_SendEvent(SC_GET_ADDRESS_ATS_INFO_ERR_EID, CFE_EVS_ERROR,
-           "ATS Info table failed Getting Address, returned: 0x%08X", Result);
+           "ATS Info table failed Getting Address, returned: 0x%08X", (unsigned int)Result);
         return(Result);
     }
     
@@ -676,7 +519,7 @@ int32 SC_GetDumpTablePointers(void)
     if (Result != CFE_SUCCESS)
     {
         CFE_EVS_SendEvent(SC_GET_ADDRESS_APPEND_INFO_ERR_EID, CFE_EVS_ERROR,
-           "Append ATS Info table failed Getting Address, returned: 0x%08X", Result);
+           "Append ATS Info table failed Getting Address, returned: 0x%08X", (unsigned int)Result);
         return(Result);
     }
 
@@ -685,7 +528,7 @@ int32 SC_GetDumpTablePointers(void)
     if (Result != CFE_SUCCESS)
     {
         CFE_EVS_SendEvent(SC_GET_ADDRESS_ATS_CTRL_BLCK_ERR_EID, CFE_EVS_ERROR,
-           "ATS Ctrl Blck table failed Getting Address, returned: 0x%08X", Result);
+           "ATS Ctrl Blck table failed Getting Address, returned: 0x%08X", (unsigned int)Result);
         return(Result);
     }
     
@@ -696,7 +539,7 @@ int32 SC_GetDumpTablePointers(void)
         if (Result != CFE_SUCCESS)
         {
             CFE_EVS_SendEvent(SC_GET_ADDRESS_ATS_CMD_STAT_ERR_EID, CFE_EVS_ERROR,
-               "ATS Cmd Status table for ATS %d failed Getting Address, returned: 0x%08X", i+1, Result);
+               "ATS Cmd Status table for ATS %d failed Getting Address, returned: 0x%08X", i+1, (unsigned int)Result);
             return(Result);
         }
     }
@@ -725,7 +568,7 @@ int32 SC_GetLoadTablePointers(void)
         if ((Result != CFE_TBL_ERR_NEVER_LOADED) && (Result != CFE_TBL_INFO_UPDATED))
         {
             CFE_EVS_SendEvent(SC_GET_ADDRESS_ATS_ERR_EID, CFE_EVS_ERROR,
-               "ATS table %d failed Getting Address, returned: 0x%08X", i+1, Result);
+               "ATS table %d failed Getting Address, returned: 0x%08X", i+1, (unsigned int)Result);
             return(Result);
         }
     }
@@ -736,7 +579,7 @@ int32 SC_GetLoadTablePointers(void)
     if ((Result !=  CFE_TBL_ERR_NEVER_LOADED) && (Result !=  CFE_TBL_INFO_UPDATED))
     {
         CFE_EVS_SendEvent (SC_GET_ADDRESS_APPEND_ERR_EID, CFE_EVS_ERROR,
-           "Append ATS table failed Getting Address, returned: 0x%08X", Result);
+           "Append ATS table failed Getting Address, returned: 0x%08X", (unsigned int)Result);
         return(Result);
     }
 
@@ -748,7 +591,7 @@ int32 SC_GetLoadTablePointers(void)
         if ((Result != CFE_TBL_ERR_NEVER_LOADED) && (Result != CFE_TBL_INFO_UPDATED))
         {
             CFE_EVS_SendEvent(SC_GET_ADDRESS_RTS_ERR_EID, CFE_EVS_ERROR,
-               "RTS table %d failed Getting Address, returned: 0x%08X", i+1, Result);
+               "RTS table %d failed Getting Address, returned: 0x%08X", i+1, (unsigned int)Result);
             return(Result);
         }
         
@@ -785,7 +628,7 @@ void SC_LoadDefaultTables(void)
     for (RtsIndex = 0; RtsIndex < SC_NUMBER_OF_RTS; RtsIndex++)
     {
         /* Example filename: /cf/apps/sc_rts001.tbl */
-        sprintf(TableName, "%s%03ld.tbl", SC_RTS_FILE_NAME, RtsIndex + 1);
+        snprintf(TableName, sizeof(TableName), "%s%03d.tbl", SC_RTS_FILE_NAME, (int)(RtsIndex + 1));
         
         FileDesc = OS_open(TableName, OS_READ_ONLY, 0);
                    
@@ -802,7 +645,7 @@ void SC_LoadDefaultTables(void)
 
     /* Display startup RTS load count */
     CFE_EVS_SendEvent(SC_RTS_LOAD_COUNT_INFO_EID, CFE_EVS_INFORMATION,
-       "RTS table file load count = %ld", RtsCount);
+       "RTS table file load count = %d", (int)RtsCount);
 
     return;    
 

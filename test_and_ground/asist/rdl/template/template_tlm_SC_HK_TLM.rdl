@@ -19,9 +19,6 @@
 !
 !       HISTORY: 
 !  2011/07/05  WFM      : Updated according to fsw changes
-!  2012/01/19  WFM      : Added record and union types for the RTS Execution
-!			: status and Disabled status arrays so that discrete
-!			: values can be displayed
 !
 !==============================================================================
 !
@@ -30,116 +27,6 @@
 
 #define RTS_STATUS_SIZE (SC_NUMBER_OF_RTS/16)
 #define SC_NUMBER_OF_ATS 2
-
-TYPES
-  RECORD $sc_$cpu_SC_RTSExeStatusType  DESC="RTS Execution Status Record"
-     UNION RTSStatusEntry  DESC="$sc $cpu SC RTS Status Entry"
-       UI AllStatus     DESC="16-bit value for status of 16 RTSs"
-       UI RTS1Status    DESC="Status of the RTS represented by bit 0",
-			mask=%x0001,DISCRETE,DRANGE=(0,1),
-			DLABEL=("Idle","Executing")
-       UI RTS2Status    DESC="Status of the RTS represented by bit 1",
-			mask=%x0002,DISCRETE,DRANGE=(0,1),
-			DLABEL=("Idle","Executing")
-       UI RTS3Status    DESC="Status of the RTS represented by bit 2",
-			mask=%x0004,DISCRETE,DRANGE=(0,1),
-			DLABEL=("Idle","Executing")
-       UI RTS4Status    DESC="Status of the RTS represented by bit 3",
-			mask=%x0008,DISCRETE,DRANGE=(0,1),
-			DLABEL=("Idle","Executing")
-       UI RTS5Status    DESC="Status of the RTS represented by bit 4",
-			mask=%x0010,DISCRETE,DRANGE=(0,1),
-			DLABEL=("Idle","Executing")
-       UI RTS6Status    DESC="Status of the RTS represented by bit 5",
-			mask=%x0020,DISCRETE,DRANGE=(0,1),
-			DLABEL=("Idle","Executing")
-       UI RTS7Status    DESC="Status of the RTS represented by bit 6",
-			mask=%x0040,DISCRETE,DRANGE=(0,1),
-			DLABEL=("Idle","Executing")
-       UI RTS8Status    DESC="Status of the RTS represented by bit 7",
-			mask=%x0080,DISCRETE,DRANGE=(0,1),
-			DLABEL=("Idle","Executing")
-       UI RTS9Status    DESC="Status of the RTS represented by bit 8",
-			mask=%x0100,DISCRETE,DRANGE=(0,1),
-			DLABEL=("Idle","Executing")
-       UI RTS10Status   DESC="Status of the RTS represented by bit 9",
-			mask=%x0200,DISCRETE,DRANGE=(0,1),
-			DLABEL=("Idle","Executing")
-       UI RTS11Status   DESC="Status of the RTS represented by bit 10",
-			mask=%x0400,DISCRETE,DRANGE=(0,1),
-			DLABEL=("Idle","Executing")
-       UI RTS12Status   DESC="Status of the RTS represented by bit 11",
-			mask=%x0800,DISCRETE,DRANGE=(0,1),
-			DLABEL=("Idle","Executing")
-       UI RTS13Status   DESC="Status of the RTS represented by bit 12",
-			mask=%x1000,DISCRETE,DRANGE=(0,1),
-			DLABEL=("Idle","Executing")
-       UI RTS14Status   DESC="Status of the RTS represented by bit 13",
-			mask=%x2000,DISCRETE,DRANGE=(0,1),
-			DLABEL=("Idle","Executing")
-       UI RTS15Status   DESC="Status of the RTS represented by bit 14",
-			mask=%x4000,DISCRETE,DRANGE=(0,1),
-			DLABEL=("Idle","Executing")
-       UI RTS16Status   DESC="Status of the RTS represented by bit 15",
-			mask=%x8000,DISCRETE,DRANGE=(0,1),
-			DLABEL=("Idle","Executing")
-     END
-  END
-
-  RECORD $sc_$cpu_SC_RTSDisStatusType  DESC="RTS Disabled Status Record"
-     UNION RTSStatusEntry  DESC="$sc $cpu SC RTS Status Entry"
-       UI AllStatus     DESC="16-bit value for status of 16 RTSs"
-       UI RTS1Status    DESC="Status of the RTS represented by bit 0",
-			mask=%x0001,DISCRETE,DRANGE=(0,1),
-			DLABEL=("Enabled","Disabled")
-       UI RTS2Status    DESC="Status of the RTS represented by bit 1",
-			mask=%x0002,DISCRETE,DRANGE=(0,1),
-			DLABEL=("Enabled","Disabled")
-       UI RTS3Status    DESC="Status of the RTS represented by bit 2",
-			mask=%x0004,DISCRETE,DRANGE=(0,1),
-			DLABEL=("Enabled","Disabled")
-       UI RTS4Status    DESC="Status of the RTS represented by bit 3",
-			mask=%x0008,DISCRETE,DRANGE=(0,1),
-			DLABEL=("Enabled","Disabled")
-       UI RTS5Status    DESC="Status of the RTS represented by bit 4",
-			mask=%x0010,DISCRETE,DRANGE=(0,1),
-			DLABEL=("Enabled","Disabled")
-       UI RTS6Status    DESC="Status of the RTS represented by bit 5",
-			mask=%x0020,DISCRETE,DRANGE=(0,1),
-			DLABEL=("Enabled","Disabled")
-       UI RTS7Status    DESC="Status of the RTS represented by bit 6",
-			mask=%x0040,DISCRETE,DRANGE=(0,1),
-			DLABEL=("Enabled","Disabled")
-       UI RTS8Status    DESC="Status of the RTS represented by bit 7",
-			mask=%x0080,DISCRETE,DRANGE=(0,1),
-			DLABEL=("Enabled","Disabled")
-       UI RTS9Status    DESC="Status of the RTS represented by bit 8",
-			mask=%x0100,DISCRETE,DRANGE=(0,1),
-			DLABEL=("Enabled","Disabled")
-       UI RTS10Status   DESC="Status of the RTS represented by bit 9",
-			mask=%x0200,DISCRETE,DRANGE=(0,1),
-			DLABEL=("Enabled","Disabled")
-       UI RTS11Status   DESC="Status of the RTS represented by bit 10",
-			mask=%x0400,DISCRETE,DRANGE=(0,1),
-			DLABEL=("Enabled","Disabled")
-       UI RTS12Status   DESC="Status of the RTS represented by bit 11",
-			mask=%x0800,DISCRETE,DRANGE=(0,1),
-			DLABEL=("Enabled","Disabled")
-       UI RTS13Status   DESC="Status of the RTS represented by bit 12",
-			mask=%x1000,DISCRETE,DRANGE=(0,1),
-			DLABEL=("Enabled","Disabled")
-       UI RTS14Status   DESC="Status of the RTS represented by bit 13",
-			mask=%x2000,DISCRETE,DRANGE=(0,1),
-			DLABEL=("Enabled","Disabled")
-       UI RTS15Status   DESC="Status of the RTS represented by bit 14",
-			mask=%x4000,DISCRETE,DRANGE=(0,1),
-			DLABEL=("Enabled","Disabled")
-       UI RTS16Status   DESC="Status of the RTS represented by bit 15",
-			mask=%x8000,DISCRETE,DRANGE=(0,1),
-			DLABEL=("Enabled","Disabled")
-     END
-  END
-END_TYPES
 
 PACKET Pxxxx APID=nnnn, DESC="$sc $cpu SC Telemetry Data Packet",
                         STALE = 36
@@ -212,11 +99,9 @@ PACKET Pxxxx APID=nnnn, DESC="$sc $cpu SC Telemetry Data Packet",
 !
   ULI  $sc_$cpu_SC_NextATSTime DESC="$sc $cpu SC The absolute time of the next ATS command"
 !
-!  UI  $sc_$cpu_SC_RTSExeStatus[RTS_STATUS_SIZE] DESC="$sc $cpu SC The execution status (in bits) of each RTS"
-  $sc_$cpu_SC_RTSExeStatusType $sc_$cpu_SC_RTSExeStatus[RTS_STATUS_SIZE] DESC="$sc $cpu SC The execution status of each RTS"
+  UI  $sc_$cpu_SC_RTSExeStatus[RTS_STATUS_SIZE] DESC="$sc $cpu SC The execution status (in bits) of each RTS"
 !
-!  UI  $sc_$cpu_SC_RTSDisableStatus[RTS_STATUS_SIZE] DESC="$sc $cpu SC The disabled status (in bits) of each RTS"
-  $sc_$cpu_SC_RTSDisStatusType $sc_$cpu_SC_RTSDisableStatus[RTS_STATUS_SIZE] DESC="$sc $cpu SC The disabled status of each RTS"
+  UI  $sc_$cpu_SC_RTSDisableStatus[RTS_STATUS_SIZE] DESC="$sc $cpu SC The disabled status (in bits) of each RTS"
 !
 !  END                !END APPEND RECORD FUNCTION
 !

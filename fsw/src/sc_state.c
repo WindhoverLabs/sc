@@ -1,6 +1,6 @@
  /*************************************************************************
  ** File:
- **   $Id: sc_state.c 1.10 2015/03/02 12:59:13EST sstrege Exp  $
+ **   $Id: sc_state.c 1.2 2015/10/08 15:21:06EDT sstrege Exp  $
  **
  **  Copyright © 2007-2014 United States Government as represented by the 
  **  Administrator of the National Aeronautics and Space Administration. 
@@ -22,6 +22,8 @@
  ** Notes:
  **
  **   $Log: sc_state.c  $
+ **   Revision 1.2 2015/10/08 15:21:06EDT sstrege 
+ **   Restoration from MKS 2009 Trunk
  **   Revision 1.10 2015/03/02 12:59:13EST sstrege 
  **   Added copyright information
  **   Revision 1.9 2014/06/06 11:37:59EDT sjudy 

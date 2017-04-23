@@ -1,8 +1,8 @@
  /*************************************************************************
  ** File:
- **   $Id: sc_cmds.c 1.21 2015/03/02 12:59:07EST sstrege Exp  $
+ **   $Id: sc_cmds.c 1.8 2016/09/09 16:32:08EDT mdeschu Exp  $
  **
- **  Copyright © 2007-2014 United States Government as represented by the 
+ **  Copyright © 2007-2015 United States Government as represented by the 
  **  Administrator of the National Aeronautics and Space Administration. 
  **  All Other Rights Reserved.  
  **
@@ -21,6 +21,22 @@
  ** Notes:
  **
  **   $Log: sc_cmds.c  $ 
+ **   Revision 1.8 2016/09/09 16:32:08EDT mdeschu  
+ **   Arguements in CFE_EVS_SendEvent causing format warnings have been explicitly cast to (unsigned int) and (int) same as cFE. 
+ **   Revision 1.7 2016/08/05 17:58:43EDT mdeschu  
+ **   Ticket #23 - SC - Fix incorrect CFE_SendEvent call 
+ **   Revision 1.6 2016/08/05 17:55:19EDT mdeschu  
+ **   Ticket #16 - Update SC app for recent CFE update 
+ **   Revision 1.5 2016/07/22 20:33:16EDT czogby  
+ **   Function Prototype for SC_ProcessCommand Needs to be Moved to .h File With All Other Prototypes 
+ **   Revision 1.4 2015/12/08 14:56:36EST czogby  
+ **   Move function prototypes into .h files 
+ **   Revision 1.3 2015/10/08 16:13:26EDT sstrege  
+ **   Restoration from MKS 2009 Trunk 
+ **   Revision 1.23 2015/06/09 13:56:35EDT czogby  
+ **   Fix Incomplete Event Message in SC 
+ **   Revision 1.22 2015/05/26 15:01:13EDT czogby  
+ **   Bug Fix: Incorrect message on ATS abort 
  **   Revision 1.21 2015/03/02 12:59:07EST sstrege  
  **   Added copyright information 
  **   Revision 1.20 2014/06/18 14:20:04EDT sjudy  
@@ -85,116 +101,11 @@
 #include "sc_version.h"
 #include "sc_rts.h"
 
-
-/************************************************************************/
-/** \brief Table manage request command handler
- **
- **  \par Description
- **       Handler for commands from cFE Table Service requesting that the
- **       application call the cFE table manage API function for the table
- **       indicated by the command packet argument.  Using this command
- **       interface allows applications to call the table API functions
- **       only when load or dump activity is pending.
- **
- **  \par Assumptions, External Events, and Notes:
- **       None
- **
- **  \param [in]         CmdPacket      a #CFE_SB_MsgPtr_t pointer that 
- **                                     references a software bus message 
- **
- **  \sa #SC_MANAGE_TABLE_CC
- **
- *************************************************************************/
-void SC_TableManageCmd(CFE_SB_MsgPtr_t CmdPacket);
-
-
-/************************************************************************/
-/** \brief Manage pending update to an RTS table
- **
- **  \par Description
- **       This function is invoked in response to a command from cFE Table
- **       Services indicating that an RTS table has a pending update.  The
- **       function will release the data pointer for the specified table,
- **       allow cFE Table Services to update the table data and re-acquire
- **       the table data pointer.
- **
- **  \par Assumptions, External Events, and Notes:
- **        None
- **
- **  \param [in]         ArrayIndex     index into array of RTS tables
- **
- **  \sa #SC_TableManageCmd
- **
- *************************************************************************/
-void SC_ManageRtsTable(int32 ArrayIndex);
-
-
-/************************************************************************/
-/** \brief Manage pending update to an ATS table
- **
- **  \par Description
- **       This function is invoked in response to a command from cFE Table
- **       Services indicating that an ATS table has a pending update.  The
- **       function will release the data pointer for the specified table,
- **       allow cFE Table Services to update the table data and re-acquire
- **       the table data pointer.
- **
- **  \par Assumptions, External Events, and Notes:
- **        None
- **
- **  \param [in]         ArrayIndex     index into array of ATS tables
- **
- **  \sa #SC_TableManageCmd
- **
- *************************************************************************/
-void SC_ManageAtsTable(int32 ArrayIndex);
-
-
-/************************************************************************/
-/** \brief Manage pending update to the ATS Append table
- **
- **  \par Description
- **       This function is invoked in response to a command from cFE Table
- **       Services indicating that the ATS Append table has a pending update.
- **       The function will release the data pointer for the specified table,
- **       allow cFE Table Services to update the table data and re-acquire
- **       the table data pointer.
- **
- **  \par Assumptions, External Events, and Notes:
- **        None
- **
- **  \param [in]         (none)
- **
- **  \sa #SC_TableManageCmd
- **
- *************************************************************************/
-void SC_ManageAppendTable(void);
-
-
 /**************************************************************************
  **
  ** Functions
  **
  **************************************************************************/
-
-/************************************************************************/
-/** \brief Processes commands
- **  
- **  \par Description
- **       Process commands. Commands can be from external sources or from SC
- **       itself.
- **       
- **       
- **       
- **  \par Assumptions, External Events, and Notes:
- **        None
- **
- **  \param [in]         CmdPacket      a #CFE_SB_MsgPtr_t pointer that 
- **                                     references a software bus message 
- **
- **
- *************************************************************************/
-void SC_ProcessCommand (CFE_SB_MsgPtr_t CmdPacket);
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /*                                                                 */
@@ -308,7 +219,12 @@ void SC_ProcessAtpCmd (void)
                             
                             CFE_EVS_SendEvent(SC_ATS_DIST_ERR_EID, CFE_EVS_ERROR,
                                "ATS Command Distribution Failed, Cmd Number: %d, SB returned: 0x%08X",
-                                              Entry->CmdNumber, Result);
+                                              Entry->CmdNumber, (unsigned int)Result);
+                            
+                            if (SC_OperData.AtsCtrlBlckAddr -> AtsNumber == SC_ATSA)
+                                TempAtsChar = 'A';
+                            else if (SC_OperData.AtsCtrlBlckAddr -> AtsNumber == SC_ATSB)
+                                TempAtsChar = 'B';
                         
                             /* Mark this ATS for abortion */
                             AbortATS = TRUE;                      
@@ -361,7 +277,7 @@ void SC_ProcessAtpCmd (void)
 
                 CFE_EVS_SendEvent(SC_ATS_MSMTCH_ERR_EID, CFE_EVS_ERROR,
                    "ATS Command Number Mismatch: Command Skipped, expected: %d received: %d",
-                                  CmdIndex + 1, Entry->CmdNumber);
+                                  (int)CmdIndex + 1, Entry->CmdNumber);
                 /*
                  ** Increment the ATS error counter
                  */
@@ -431,7 +347,7 @@ void SC_ProcessAtpCmd (void)
         
       
     } /* end if next ATS command time */
-} /* end SC_ProccessAtpCommand */
+} /* end SC_ProcessAtpCmd */
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /*                                                                 */
@@ -511,7 +427,7 @@ void SC_ProcessRtpCommand (void)
                 CFE_EVS_SendEvent (SC_RTS_DIST_ERR_EID,
                                    CFE_EVS_ERROR,
                                    "RTS %03d Command Distribution Failed: RTS Stopped. SB returned 0x%08X",
-                                   RtsNum + 1);
+                                   (int)(RtsNum + 1), (unsigned int)Result);
 
                 SC_AppData.RtsCmdErrCtr++;
                 SC_OperData.RtsInfoTblAddr[RtsNum].CmdErrCtr++;
@@ -908,7 +824,7 @@ void SC_ProcessCommand (CFE_SB_MsgPtr_t CmdPacket)
 void SC_TableManageCmd(CFE_SB_MsgPtr_t CmdPacket)
 {
     int32 ArrayIndex;
-    int32 TableID = (int32) ((CFE_TBL_NotifyCmd_t *) CmdPacket)->Parameter;
+    int32 TableID = (int32) ((CFE_TBL_NotifyCmd_t *) CmdPacket)->Payload.Parameter;
 
     /* Manage selected table as appropriate for each table type */
     if ((TableID >= SC_TBL_ID_ATS_0) &&
@@ -963,7 +879,7 @@ void SC_TableManageCmd(CFE_SB_MsgPtr_t CmdPacket)
     {
         /* Invalid table ID */
         CFE_EVS_SendEvent(SC_TABLE_MANAGE_ID_ERR_EID, CFE_EVS_ERROR,
-                         "Table manage command packet error: table ID = %d", TableID);
+                         "Table manage command packet error: table ID = %d", (int)TableID);
     }
 
     return;    
@@ -1000,7 +916,7 @@ void SC_ManageRtsTable(int32 ArrayIndex)
         /* Ignore successful dump or validate and cmds before first activate. */
         CFE_EVS_SendEvent(SC_TABLE_MANAGE_RTS_ERR_EID, CFE_EVS_ERROR,
                          "RTS table manage process error: RTS = %d, Result = 0x%X",
-                          ArrayIndex + 1, Result);
+                          (int)ArrayIndex + 1, (unsigned int)Result);
     }
     
     return;    
@@ -1038,7 +954,7 @@ void SC_ManageAtsTable(int32 ArrayIndex)
         /* Ignore successful dump or validate and cmds before first activate. */
         CFE_EVS_SendEvent(SC_TABLE_MANAGE_ATS_ERR_EID, CFE_EVS_ERROR,
                          "ATS table manage process error: ATS = %d, Result = 0x%X",
-                          ArrayIndex + 1, Result);
+                          (int)ArrayIndex + 1, (unsigned int)Result);
     }
     
     return;    
@@ -1075,7 +991,7 @@ void SC_ManageAppendTable(void)
     {
         /* Ignore successful dump or validate and cmds before first activate. */
         CFE_EVS_SendEvent(SC_TABLE_MANAGE_APPEND_ERR_EID, CFE_EVS_ERROR,
-                         "ATS Append table manage process error: Result = 0x%X", Result);
+                         "ATS Append table manage process error: Result = 0x%X", (unsigned int)Result);
     }
     
     return;    
