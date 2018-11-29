@@ -3,43 +3,37 @@
     header
       span.widget-icon
         i.fa.fa-table
-      h2 RGBLED - Command and Data Handling
+      h2 SC - General
     div.widget-body.table-responsive
       table.table.table-condensed
         tbody
           tr
-            th Cmd Count
+            th Switch Pending
             td
-              div(data-cdr={tlm:[{name:'/RGBLED/RGBLED_HkTlm_t/usCmdCnt'}],indicator:'text'}) ---
+              div(data-cdr={tlm:[{name:'/SC/SC_HkTlm_t/SwitchPendFlag'}],indicator:'text'}) ---
           tr
-            th Error Count
+            th Append Cmd Arg
             td
-              div(data-cdr={tlm:[{name:'/RGBLED/RGBLED_HkTlm_t/usCmdErrCnt'}],indicator:'text'}) ---
+              div(data-cdr={tlm:[{name:'/SC/SC_HkTlm_t/AppendCmdArg'}],indicator:'text'}) ---
           tr
-            th Color
+            th Append Entry Count
             td
-              div(data-cdr={tlm:[{name:'/RGBLED/RGBLED_HkTlm_t/Color', calibration:{ type:'enumeration',
-              enumerations:[
-              { value: 0, name:'OFF'},
-              { value: 1, name:'RED'},
-              { value: 2, name:'GREEN'},
-              { value: 3, name:'BLUE'},
-              { value: 4, name:'AMBER'},
-              { value: 5, name:'YELLOW'},
-              { value: 6, name:'PURPLE'},
-              { value: 7, name:'CYAN'},
-              { value: 8, name:'WHITE'}
-              ]}}],indicator:'text'}) ---
+              div(data-cdr={tlm:[{name:'/SC/SC_HkTlm_t/AppendEntryCount'}],indicator:'text'}) ---
           tr
-            th State
+            th Append Byte Count
             td
-              div(data-cdr={tlm:[{name:'/RGBLED/RGBLED_HkTlm_t/State', calibration:{ type:'enumeration',
-              enumerations:[
-              { value: 0, name:'UNINITIALIZED'},
-              { value: 1, name:'INITIALIZED'},
-              { value: 2, name:'ON'},
-              { value: 3, name:'SELFTEST'}
-              ]}}],indicator:'text'}) ---
+              div(data-cdr={tlm:[{name:'/SC/SC_HkTlm_t/AppendByteCount'}],indicator:'text'}) ---
+          tr
+            th Append Load Count
+            td
+              div(data-cdr={tlm:[{name:'/SC/SC_HkTlm_t/AppendLoadCount'}],indicator:'text'}) ---
+          tr
+            th ATP Free Bytes[0]
+            td
+              div(data-cdr={tlm:[{name:'/SC/SC_HkTlm_t/AtpFreeBytes[0]'}],indicator:'text'}) ---
+          tr
+            th ATP Free Bytes[1]
+            td
+              div(data-cdr={tlm:[{name:'/SC/SC_HkTlm_t/AtpFreeBytes[1]'}],indicator:'text'}) ---
     footer.btn-group(role="group")      
-      button.btn.cdr-outline-primary(data-cdr={cmd:{name:'/RGBLED/Noop'},indicator:'cmd'}) No-Op    
-      button.btn.cdr-outline-primary(data-cdr={cmd:{name:'/RGBLED/Reset'},indicator:'cmd'}) Reset
+      button.btn.cdr-outline-primary(data-cdr={cmd:{name:'/SC/ManageTable'},indicator:'cmd'}) Manage Table    
