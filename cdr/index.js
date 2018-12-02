@@ -11,7 +11,7 @@ module.exports = class CfeCdrPlugin extends CdrPlugin {
 
   getContent() {
     var result = {
-      shortDescription: 'SC',
+      shortDescription: 'Stored Command',
       longDescription: 'Stored Command.',
       nodes: {
         main: {
