@@ -49,6 +49,7 @@ add_airliner_app_def(sc
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/sc_rtsrq.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/sc_state.c
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/sc_state.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../src/sc_symbols.c
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/sc_tbldefs.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/sc_utils.c
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/sc_utils.h
