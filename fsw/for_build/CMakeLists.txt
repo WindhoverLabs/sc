@@ -59,13 +59,9 @@ add_airliner_app_def(sc
     INCLUDES
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/
 
-    USER_DOCS   ${CMAKE_CURRENT_SOURCE_DIR}/user_doxy.in
     DESIGN_DOCS ${CMAKE_CURRENT_SOURCE_DIR}/detail_doxy.in
 
-    MSG_OVERRIDES ${CMAKE_CURRENT_SOURCE_DIR}/sc_msg_overrides.json
-
-    COMMANDER_PLUGIN
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../cdr
+    DESIGN_DEFINITION ${CMAKE_CURRENT_SOURCE_DIR}/sc_msg_overrides.json
     
     REFERENCE_CONFIG
         ${PROJECT_SOURCE_DIR}/apps/sc/fsw/mission_inc
@@ -76,6 +72,9 @@ add_airliner_app_def(sc
 
 add_airliner_app_unit_test(sc-ut
     UTASSERT
+    NO_HELGRIND
+    NO_MASSIF
+
     SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/sc_app_test.c
         ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/sc_app_test.h
