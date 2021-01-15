@@ -65,6 +65,7 @@
  * Function Definitions
  */
 
+
 uint8  SC_LOADS_TEST_GetTotalMsgLengthHook_RunCount;
 uint16 SC_LOADS_TEST_CFE_SB_GetTotalMsgLengthHook1(CFE_SB_MsgPtr_t MsgPtr)
 {
@@ -115,7 +116,6 @@ void SC_LoadAts_Test_Nominal(void)
 {
     SC_NoArgsCmd_t   CmdPacket;
     SC_AtsEntryHeader_t*   Entry;
-    uint16 AtsTable[SC_ATS_BUFF_SIZE] = {0};
     uint8  AtsIndex = 0;
 
     SC_InitTables();
@@ -150,7 +150,6 @@ void SC_LoadAts_Test_CmdRunOffEndOfBuffer(void)
 {
     SC_NoArgsCmd_t   CmdPacket;
     SC_AtsEntryHeader_t*   Entry;
-    uint16 AtsTable[SC_ATS_BUFF_SIZE];
     uint8  AtsIndex = 0;
 
     SC_InitTables();
@@ -180,7 +179,6 @@ void SC_LoadAts_Test_CmdLengthInvalid(void)
 {
     SC_NoArgsCmd_t   CmdPacket;
     SC_AtsEntryHeader_t*   Entry;
-    uint16 AtsTable[SC_ATS_BUFF_SIZE] = {0};
     uint8  AtsIndex = 0;
 
     SC_InitTables();
@@ -208,7 +206,6 @@ void SC_LoadAts_Test_CmdNumberInvalid(void)
 {
     SC_NoArgsCmd_t   CmdPacket;
     SC_AtsEntryHeader_t*   Entry;
-    uint16 AtsTable[SC_ATS_BUFF_SIZE];
     uint8  AtsIndex = 0;
 
     SC_InitTables();
@@ -231,7 +228,6 @@ void SC_LoadAts_Test_EndOfLoadReached(void)
 {
     SC_NoArgsCmd_t   CmdPacket;
     SC_AtsEntryHeader_t*   Entry;
-    uint16 AtsTable[SC_ATS_BUFF_SIZE];
     uint8  AtsIndex = 0;
 
     SC_InitTables();
@@ -256,7 +252,6 @@ void SC_LoadAts_Test_AtsBufferTooSmall(void)
     /* Runs through the nominal case one time, at the end of which the condition is set for this case */
 
     SC_AtsEntryHeader_t*   Entry;
-    uint16 AtsTable[SC_ATS_BUFF_SIZE] = {0};
     uint32   AtsIndex = 0;
     uint32   i;
 
@@ -278,7 +273,7 @@ void SC_LoadAts_Test_AtsBufferTooSmall(void)
 
     /* Execute the function being tested */
     SC_LoadAts(AtsIndex);
-    
+
     /* Verify results */
     UtAssert_True (Ut_CFE_EVS_GetEventQueueDepth() == 2, "Ut_CFE_EVS_GetEventQueueDepth() == 2");
 
@@ -290,7 +285,6 @@ void SC_LoadAts_Test_LoadExactlyBufferLength(void)
     /* Runs through the nominal case one time, at the end of which the condition is set for this case */
 
     SC_AtsEntryHeader_t*   Entry;
-    uint16 AtsTable[SC_ATS_BUFF_SIZE];
     uint32   AtsIndex = 0;
     uint32   i;
 
@@ -367,7 +361,6 @@ void SC_ValidateAts_Test(void)
     SC_AtsEntryHeader_t*   Entry;
     uint8 AtsIndex = 0;
     int16 Result;
-    uint16 AtsTable[SC_ATS_BUFF_SIZE];
 
     SC_InitTables();
 
@@ -390,7 +383,6 @@ void SC_ValidateAppend_Test(void)
     SC_AtsEntryHeader_t*   Entry;
     uint8 AtsIndex = 0;
     int16 Result;
-    uint16 AtsTable[SC_ATS_BUFF_SIZE];
 
     SC_InitTables();
 
@@ -942,7 +934,6 @@ void SC_ProcessAppend_Test(void)
 {
     SC_AtsEntryHeader_t*   Entry;
     uint8 AtsIndex = 0;
-    uint16 AtsTable[SC_ATS_BUFF_SIZE];
 
     /* Setting memcpy to return success, otherwise the test will cause a seg fault */
     Ut_CFE_PSP_MEMUTILS_SetReturnCode(UT_CFE_PSP_MEMUTILS_MEMCPY_INDEX, CFE_PSP_SUCCESS, 1);
@@ -980,7 +971,6 @@ void SC_VerifyAtsTable_Test_Nominal(void)
     SC_AtsEntryHeader_t*   Entry2;
     uint8 AtsIndex = 0;
     int16 Result;
-    uint16 AtsTable[SC_ATS_BUFF_SIZE];
 
     SC_InitTables();
 
@@ -1027,7 +1017,6 @@ void SC_VerifyAtsTable_Test_InvalidEntry(void)
     SC_AtsEntryHeader_t*   Entry2;
     uint8 AtsIndex = 0;
     int16 Result;
-    uint16 AtsTable[SC_ATS_BUFF_SIZE];
 
     SC_InitTables();
 
@@ -1054,7 +1043,6 @@ void SC_VerifyAtsTable_Test_EmptyTable(void)
     SC_AtsEntryHeader_t*   Entry;
     uint8 AtsIndex = 0;
     int16 Result;
-    uint16 AtsTable[SC_ATS_BUFF_SIZE];
 
     SC_InitTables();
 
@@ -1081,7 +1069,6 @@ void SC_VerifyAtsEntry_Test_Nominal(void)
     SC_AtsEntryHeader_t*   Entry;
     uint8 AtsIndex = 0;
     int16 Result;
-    uint16 AtsTable[SC_ATS_BUFF_SIZE];
 
     SC_InitTables();
 
@@ -1128,7 +1115,6 @@ void SC_VerifyAtsEntry_Test_InvalidCmdNumber(void)
     SC_AtsEntryHeader_t*   Entry;
     uint8 AtsIndex = 0;
     int16 Result;
-    uint16 AtsTable[SC_ATS_BUFF_SIZE];
 
     SC_InitTables();
 
@@ -1155,7 +1141,6 @@ void SC_VerifyAtsEntry_Test_BufferFull(void)
     SC_AtsEntryHeader_t*   Entry;
     uint8 AtsIndex = 0;
     int16 Result;
-    uint16 AtsTable[SC_ATS_BUFF_SIZE];
 
     SC_InitTables();
 
@@ -1182,7 +1167,6 @@ void SC_VerifyAtsEntry_Test_InvalidCmdLengthTooLow(void)
     SC_AtsEntryHeader_t*   Entry;
     uint8 AtsIndex = 0;
     int16 Result;
-    uint16 AtsTable[SC_ATS_BUFF_SIZE];
 
     SC_InitTables();
 
@@ -1213,7 +1197,6 @@ void SC_VerifyAtsEntry_Test_InvalidCmdLengthTooHigh(void)
     SC_AtsEntryHeader_t*   Entry;
     uint8 AtsIndex = 0;
     int16 Result;
-    uint16 AtsTable[SC_ATS_BUFF_SIZE];
 
     SC_InitTables();
 
@@ -1244,7 +1227,6 @@ void SC_VerifyAtsEntry_Test_BufferOverflow(void)
     SC_AtsEntryHeader_t*   Entry;
     uint8 AtsIndex = 0;
     int16 Result;
-    uint16 AtsTable[SC_ATS_BUFF_SIZE];
 
     SC_InitTables();
 
@@ -1275,7 +1257,6 @@ void SC_VerifyAtsEntry_Test_DuplicateCmdNumber(void)
     SC_AtsEntryHeader_t*   Entry;
     uint8 AtsIndex = 0;
     int16 Result;
-    uint16 AtsTable[SC_ATS_BUFF_SIZE];
 
     SC_InitTables();
 

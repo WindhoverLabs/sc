@@ -34,6 +34,8 @@ void SC_Test_Setup(void)
 
     CFE_PSP_MemSet(&SC_OperData, 0, sizeof(SC_OperData_t));
     CFE_PSP_MemSet(&SC_AppData,  0, sizeof(SC_AppData_t));
+
+    CFE_PSP_MemSet(AtsTable, 0, sizeof(AtsTable));
     
     Ut_CFE_EVS_Reset();
     Ut_CFE_FS_Reset();
