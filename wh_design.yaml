@@ -215,7 +215,7 @@
       struct: SC_HkTlm_t
   commands: 
     SC_CMD_MID: 
-      msgid: 
+      msgID: 
       commands: 
         Noop: 
           cc: 0
@@ -269,13 +269,13 @@
           cc: 16
           struct: SC_NoArgsCmd_t
     SC_SEND_HK_MID: 
-      msgid: 
+      msgID: 
       commands: 
         SendHK: 
           cc: 0
           struct: SC_NoArgsCmd_t
     SC_1HZ_WAKEUP_MID: 
-      msgid: 
+      msgID: 
       commands: 
         1HzWakeUp: 
           cc: 0
