@@ -47,6 +47,8 @@
 void SC_Test_Setup(void);
 void SC_Test_TearDown(void);
 
+uint16 AtsTable[SC_ATS_BUFF_SIZE];
+
 /************************/
 /*  End of File Comment */
 /************************/
