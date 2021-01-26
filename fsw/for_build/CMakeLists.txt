@@ -68,7 +68,7 @@ buildliner_add_app_def(sc
 
 
 
-buildliner_add_app_def(sc-ut
+buildliner_add_app_unit_test(sc-ut
     UTASSERT
     NO_HELGRIND
     NO_MASSIF
